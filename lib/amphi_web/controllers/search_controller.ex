@@ -10,8 +10,8 @@ defmodule AmphiWeb.SearchController do
       query = command["search_query"]
       search_query = query
       url = "https://api.scraperapi.com/?api_key=#{api_key}&url=https://scholar.google.com/scholar?q=#{URI.encode(search_query)}"
-      # response = HTTPoison.get(url, [], timeout: 10000, recv_timeout: :infinity)
-      response = {:ok, %HTTPoison.Response{status_code: 200, body: File.read("output.txt") |> elem(1)}}
+      response = HTTPoison.get(url, [], timeout: 10000, recv_timeout: :infinity)
+      # response = {:ok, %HTTPoison.Response{status_code: 200, body: File.read("output.txt") |> elem(1)}}
 
       case response do
         {:error, %HTTPoison.Error{reason: reason}} ->
