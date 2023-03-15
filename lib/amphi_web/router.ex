@@ -18,6 +18,7 @@ defmodule AmphiWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/search", SearchController, :index
   end
 
   # Other scopes may use custom stacks.
