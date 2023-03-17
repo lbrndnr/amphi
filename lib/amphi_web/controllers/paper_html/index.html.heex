@@ -1,0 +1,10 @@
+<h1>Feed</h1>
+
+<table>
+    <%= for paper <- @papers do %>
+    <tr>
+        <td><b><%= paper.title %></b></td>
+        <td><.link href={~p"/papers/#{paper.id}"}>View</.link></td>
+    </tr>
+    <% end %>
+</table>

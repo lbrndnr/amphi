@@ -17,7 +17,9 @@ defmodule AmphiWeb.Router do
   scope "/", AmphiWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    resources "/papers", PaperController, only: [:show, :new, :create]
+    post "/papers/new", PaperController, :create
+    get "/", PaperController, :index
     get "/search", SearchController, :index
   end
 

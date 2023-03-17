@@ -1,0 +1,24 @@
+defmodule Amphi.Papers do
+
+    alias Amphi.Repo
+    alias Amphi.Models.Paper
+
+    def get_paper(id) do
+        Repo.get(Paper, id)
+    end
+
+    def list_papers do
+       Repo.all(Paper)
+    end
+
+    def change_paper(%Paper{} = paper) do
+        Paper.changeset(paper, %{})
+    end
+
+    def change_paper(attrs \\ %{}) do
+        %Paper{}
+        |> Paper.changeset(attrs)
+        |> Repo.insert()
+    end
+
+end
