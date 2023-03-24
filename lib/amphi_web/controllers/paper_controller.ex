@@ -4,6 +4,19 @@ defmodule AmphiWeb.PaperController do
    alias Amphi.Papers
    alias Amphi.Models.Paper
 
+   plug :authenticate when action in [:new]
+
+   defp authenticate(conn, _opts) do
+       if conn.assigns.current_user do
+           conn
+       else
+           conn
+           |> put_flash(:error, "You must be logged in to access that page.")
+           |> redirect(to: ~p"/")
+           |> halt()
+       end
+   end
+
     def index(conn, _params) do
         papers = Papers.list_papers()
         render(conn, :index, papers: papers)
@@ -20,7 +33,7 @@ defmodule AmphiWeb.PaperController do
     end
 
     def create(conn, %{"paper" => paper_params}) do
-        case Papers.change_paper(paper_params) do
+        case Papers.insert_paper(paper_params) do
             {:ok, paper} ->
                 conn
                 |> put_flash(:info, "#{paper.title} created!")

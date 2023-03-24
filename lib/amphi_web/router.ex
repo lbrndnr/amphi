@@ -8,6 +8,7 @@ defmodule AmphiWeb.Router do
     plug :put_root_layout, {AmphiWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug AmphiWeb.Auth
   end
 
   pipeline :api do
@@ -17,10 +18,13 @@ defmodule AmphiWeb.Router do
   scope "/", AmphiWeb do
     pipe_through :browser
 
-    resources "/papers", PaperController, only: [:show, :new, :create]
-    post "/papers/new", PaperController, :create
-    get "/", PaperController, :index
+    resources "/users", UserController, only: [:new, :create]
     get "/search", SearchController, :index
+    get "/", PaperController, :index
+    resources "/sessions", SessionController, only: [:new, :create]
+
+    resources "/papers", PaperController, only: [:show, :new, :create]
+    delete "sessions/delete", SessionController, :delete
   end
 
   # Other scopes may use custom stacks.

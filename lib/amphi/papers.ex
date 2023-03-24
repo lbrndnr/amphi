@@ -15,9 +15,9 @@ defmodule Amphi.Papers do
         Paper.changeset(paper, %{})
     end
 
-    def change_paper(attrs \\ %{}) do
+    def insert_paper(params \\ %{}) do
         %Paper{}
-        |> Paper.changeset(attrs)
+        |> Paper.changeset(params)
         |> Repo.insert()
     end
 

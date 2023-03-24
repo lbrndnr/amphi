@@ -9,9 +9,9 @@ defmodule Amphi.Models.Paper do
         timestamps()
     end
 
-    def changeset(paper, attrs) do
+    def changeset(paper, params) do
         paper
-        |> cast(attrs, [:title, :url])
+        |> cast(params, [:title, :url])
         |> validate_required([:title, :url])
         |> validate_length(:title, min: 1, max: 100)
         |> validate_length(:url, min: 5, max: 100)
