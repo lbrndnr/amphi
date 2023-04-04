@@ -44,6 +44,7 @@ defmodule AmphiWeb do
 
       import Plug.Conn
       import AmphiWeb.Gettext
+      import AmphiWeb.Auth, only: [authenticate_user: 2]
 
       unquote(verified_routes())
     end

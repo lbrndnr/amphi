@@ -24,7 +24,7 @@ defmodule AmphiWeb.Router do
     resources "/sessions", SessionController, only: [:new, :create]
 
     resources "/papers", PaperController, only: [:show, :new, :create]
-    delete "sessions/delete", SessionController, :delete
+    delete "/sessions/delete", SessionController, :delete
   end
 
   # Other scopes may use custom stacks.

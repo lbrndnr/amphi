@@ -3,7 +3,10 @@
 <table>
     <%= for paper <- @papers do %>
     <tr>
-        <td><b><%= paper.title %></b></td>
+        <td>
+            <b><%= paper.title %></b>
+            <p><%= paper.abstract %></p>
+        </td>
         <td><.link href={~p"/papers/#{paper.id}"}>View</.link></td>
     </tr>
     <% end %>

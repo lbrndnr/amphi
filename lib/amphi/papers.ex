@@ -2,6 +2,7 @@ defmodule Amphi.Papers do
 
     alias Amphi.Repo
     alias Amphi.Models.Paper
+    alias Ecto.Changeset
 
     def get_paper(id) do
         Repo.get(Paper, id)
@@ -18,6 +19,7 @@ defmodule Amphi.Papers do
     def insert_paper(params \\ %{}) do
         %Paper{}
         |> Paper.changeset(params)
+        |> Changeset.put_assoc(:authors, params["authors"])
         |> Repo.insert()
     end
 

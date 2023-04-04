@@ -1,5 +1,6 @@
 defmodule AmphiWeb.Auth do
     import Plug.Conn
+    import Phoenix.Controller
 
     def init(opts), do: opts
 
@@ -18,6 +19,17 @@ defmodule AmphiWeb.Auth do
 
     def logout(conn) do
         configure_session(conn, drop: true)
+    end
+
+    def authenticate_user(conn, _opts) do
+        if conn.assigns.current_user do
+            conn
+        else
+            conn
+            |> put_flash(:error, "You must be logged in to access that page.")
+            |> redirect(to: "/")
+            |> halt()
+        end
     end
 
 end

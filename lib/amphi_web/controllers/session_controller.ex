@@ -1,15 +1,12 @@
 defmodule AmphiWeb.SessionController do
     use AmphiWeb, :controller
 
-    alias Amphi.Users
-    alias Amphi.Models.User
-
     def new(conn, _params) do
         render(conn, :new)
     end
 
     def create(conn, %{"session" => %{"username" => username, "password" => password}}) do
-        case Users.authenticate(username, password) do
+        case Amphi.Users.authenticate(username, password) do
             {:ok, user} ->
                 conn
                 |> AmphiWeb.Auth.login(user)

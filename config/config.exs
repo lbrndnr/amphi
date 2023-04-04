@@ -7,6 +7,24 @@
 # General application configuration
 import Config
 
+config :amphi, Amphi.Repo,
+  database: "amphi_repo",
+  username: "user",
+  password: "pass",
+  hostname: "localhost"
+
+config :crawly,
+  closespider_timeout: 10,
+  concurrent_requests_per_domain: 8,
+  fetcher: {Crawly.Fetchers.Splash, [base_url: "http://localhost:8050/render.html"]},
+  middlewares: [
+    # Crawly.Middlewares.DomainFilter,
+    # Crawly.Middlewares.UniqueRequest,
+    # Crawly.Middlewares.AutoCookiesManager,
+    {Crawly.Middlewares.RequestOptions, [follow_redirect: true]},
+    {Crawly.Middlewares.UserAgent, user_agents: ["Crawly Bot"]}
+  ]
+
 config :amphi,
   ecto_repos: [Amphi.Repo]
 

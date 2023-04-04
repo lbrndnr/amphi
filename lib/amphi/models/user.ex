@@ -8,6 +8,7 @@ defmodule Amphi.Models.User do
         field :username, :string
         field :password, :string, virtual: true
         field :password_hash, :string
+        has_many :author, Amphi.Models.Author
 
         timestamps()
     end
@@ -23,6 +24,8 @@ defmodule Amphi.Models.User do
         user
         |> changeset(params)
         |> cast(params, [:password])
+        |> validate_format(:email, ~r/@/)
+        |> unique_constraint(:email)
         |> validate_required([:password])
         |> validate_length(:password, min: 8, max: 100)
         |> put_pass_hash()

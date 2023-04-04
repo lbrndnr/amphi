@@ -49,9 +49,10 @@ defmodule Amphi.MixProject do
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
       {:plug_cowboy, "~> 2.5"},
-      {:httpoison, "~> 2.1.0"},
+      {:httpoison, "~> 1.7.0"},
       {:floki, "~> 0.34.2"},
-      {:pbkdf2_elixir, "~> 1.0"}
+      {:pbkdf2_elixir, "~> 1.0"},
+      {:crawly, "~> 0.14.0"},
     ]
   end
 
