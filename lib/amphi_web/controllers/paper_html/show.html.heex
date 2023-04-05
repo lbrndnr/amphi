@@ -1,1 +1,9 @@
 <h1><%= @paper.title %></h1>
+<p><%= @paper.abstract %></p>
+<%= for author <- @paper.authors do %>
+    <tr>
+        <td>
+            <b><%= author.name %></b>
+        </td>
+    </tr>
+<% end %>

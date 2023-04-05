@@ -13,7 +13,7 @@ defmodule AmphiWeb.PaperController do
    end
 
    def show(conn, %{"id" => id}) do
-      paper = Papers.get_paper(id)
+      paper = Papers.get_paper(id, [:authors])
       render(conn, :show, paper: paper)
    end
 

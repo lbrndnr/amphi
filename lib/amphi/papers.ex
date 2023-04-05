@@ -4,8 +4,12 @@ defmodule Amphi.Papers do
     alias Amphi.Models.Paper
     alias Ecto.Changeset
 
-    def get_paper(id) do
-        Repo.get(Paper, id)
+    def get_paper(id, assocs \\ []) do
+        paper = Repo.get(Paper, id)
+        case assocs do
+            [] -> paper
+            assocs -> Repo.preload(paper, assocs)
+        end
     end
 
     def list_papers do
