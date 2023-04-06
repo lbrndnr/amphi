@@ -25,55 +25,20 @@ defmodule AmphiWeb.PostController do
       render(conn, :new, changeset: changeset)
    end
 
-   defp get_paper_meta(url) do
-      res = Crawly.fetch(url)
-      {:ok, html} = Floki.parse_document(res.body)
-
-      title = html
-      |> Floki.find(".citation__title")
-      |> Floki.text
-
-      abstract = html
-      |> Floki.find(".abstractSection .abstractInFull")
-      |> Floki.text
-
-      author_names = html
-      |> Floki.find(".loa__author-name")
-      |> Enum.map(fn node -> Floki.text(node) end)
-
-      %{
-         "title" => title,
-         "abstract" => abstract,
-         "authors" => Enum.map(author_names, fn a -> %{name: a} end)
-      }
-   end
-
    def create(conn, %{"post" => post_params}) do
-      paper_meta = get_paper_meta(post_params["url"])
-
-      authors = Enum.map(paper_meta["authors"], fn author_params ->
-         author = case Authors.get_author_by(author_params) do
-            nil -> Authors.create_author(author_params)
-            author -> {:ok, author}
-         end
-
-         elem(author, 1)
-      end)
-
-      paper_params = %{paper_meta | "authors" => authors }
-      |> Map.merge(post_params)
-
-      paper = case Papers.get_paper_by(url: post_params["url"]) do
-         nil -> Papers.create_paper(paper_params)
+      url = post_params["url"]
+      paper = case Papers.get_paper_by(url: url) do
+         nil -> Papers.create_paper_by(url)
          paper -> {:ok, paper}
       end
 
-      post_params = %{"paper" => elem(paper, 1), "likes" => 0, "user_id" => get_session(conn, :user_id)}
-      case Posts.create_post(post_params) do
-         {:ok, post} ->
-            conn
-            |> put_flash(:info, "#{paper.title} created!")
-            |> redirect(to: ~p"/")
+      with {:ok, paper} <- paper,
+           post_params = %{"paper" => paper, "user_id" => get_session(conn, :user_id)},
+           {:ok, _post} <- Posts.create_post(post_params) do
+         conn
+         |> put_flash(:info, "#{paper.title} created!")
+         |> redirect(to: ~p"/")
+      else
          {:error, %Ecto.Changeset{} = changeset} ->
             render(conn, :new, changeset: changeset)
       end
