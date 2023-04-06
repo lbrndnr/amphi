@@ -9,21 +9,22 @@ defmodule Amphi.Models.User do
         field :password, :string, virtual: true
         field :password_hash, :string
         has_many :author, Amphi.Models.Author
+        has_many :posts, Amphi.Models.Post
 
         timestamps()
     end
 
-    def changeset(user, params) do
+    def changeset(user, attrs) do
         user
-        |> cast(params, [:name, :username, :email])
+        |> cast(attrs, [:name, :username, :email])
         |> validate_required([:name, :username, :email])
         |> validate_length(:username, min: 2, max: 20)
     end
 
-    def registration_changeset(user, params) do
+    def registration_changeset(user, attrs) do
         user
-        |> changeset(params)
-        |> cast(params, [:password])
+        |> changeset(attrs)
+        |> cast(attrs, [:password])
         |> validate_format(:email, ~r/@/)
         |> unique_constraint(:email)
         |> validate_required([:password])

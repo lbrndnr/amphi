@@ -60,7 +60,7 @@ defmodule AmphiWeb.PaperController do
          |> Map.merge(paper_meta)
          |> Map.put("authors", authors)
 
-         case Papers.insert_paper(paper_params) do
+         case Papers.create_paper(paper_params) do
             {:ok, paper} ->
                 conn
                 |> put_flash(:info, "#{paper.title} created!")

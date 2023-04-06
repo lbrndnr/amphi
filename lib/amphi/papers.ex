@@ -12,6 +12,10 @@ defmodule Amphi.Papers do
         end
     end
 
+    def get_paper_by(attrs) do
+        Repo.get_by(Paper, attrs)
+    end
+
     def list_papers do
        Repo.all(Paper)
     end
@@ -20,10 +24,10 @@ defmodule Amphi.Papers do
         Paper.changeset(paper, %{})
     end
 
-    def insert_paper(params \\ %{}) do
+    def create_paper(attrs \\ %{}) do
         %Paper{}
-        |> Paper.changeset(params)
-        |> Changeset.put_assoc(:authors, params["authors"])
+        |> Paper.changeset(attrs)
+        |> Changeset.put_assoc(:authors, attrs["authors"])
         |> Repo.insert()
     end
 

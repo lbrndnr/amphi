@@ -20,10 +20,10 @@ defmodule AmphiWeb.Router do
 
     resources "/users", UserController, only: [:new, :create]
     get "/search", SearchController, :index
-    get "/", PaperController, :index
+    get "/", PostController, :index
     resources "/sessions", SessionController, only: [:new, :create]
 
-    resources "/papers", PaperController, only: [:show, :new, :create]
+    resources "/posts", PostController, only: [:show, :new, :create]
     delete "/sessions/delete", SessionController, :delete
   end
 

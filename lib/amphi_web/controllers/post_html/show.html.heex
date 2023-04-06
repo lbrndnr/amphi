@@ -1,0 +1,15 @@
+<.header>
+  <%= @post.paper.title %>
+  <:subtitle><%= @post.paper.abstract %></:subtitle>
+  <:actions>
+    <.link href={~p"/posts/#{@post}/edit"}>
+      <.button>Edit post</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Likes"><%= @post.likes %></:item>
+</.list>
+
+<.back navigate={~p"/"}>Back to posts</.back>

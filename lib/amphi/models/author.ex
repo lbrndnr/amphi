@@ -13,9 +13,9 @@ defmodule Amphi.Models.Author do
         timestamps()
     end
 
-    def changeset(author, params) do
+    def changeset(author, attrs) do
         author
-        |> cast(params, [:name, :email, :affiliation])
+        |> cast(attrs, [:name, :email, :affiliation])
     end
 
 end

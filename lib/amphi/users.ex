@@ -7,27 +7,27 @@ defmodule Amphi.Users do
         Repo.get(User, id)
     end
 
-    def get_user_by(params) do
-        Repo.get_by(User, params)
+    def get_user_by(attrs) do
+        Repo.get_by(User, attrs)
     end
 
     def change_user(%User{} = user) do
         User.changeset(user, %{})
     end
 
-    def insert_user(params \\ %{}) do
+    def create_user(attrs \\ %{}) do
         %User{}
-        |> User.changeset(params)
+        |> User.changeset(attrs)
         |> Repo.insert()
     end
 
-    def change_registration(%User{} = user, params) do
-        User.registration_changeset(user, params)
+    def change_registration(%User{} = user, attrs) do
+        User.registration_changeset(user, attrs)
     end
 
-    def register_user(params \\ %{}) do
+    def register_user(attrs \\ %{}) do
         %User{}
-        |> User.registration_changeset(params)
+        |> User.registration_changeset(attrs)
         |> Repo.insert()
     end
 

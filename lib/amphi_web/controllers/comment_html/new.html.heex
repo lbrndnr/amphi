@@ -1,0 +1,8 @@
+<.header>
+  New Comment
+  <:subtitle>Use this form to manage comment records in your database.</:subtitle>
+</.header>
+
+<.comment_form changeset={@changeset} action={~p"/comments"} />
+
+<.back navigate={~p"/comments"}>Back to comments</.back>

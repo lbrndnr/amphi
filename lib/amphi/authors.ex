@@ -15,7 +15,7 @@ defmodule Amphi.Authors do
     Repo.get_by(Author, params)
 end
 
-  def insert_author(params \\ %{}) do
+  def create_author(params \\ %{}) do
       %Author{}
       |> Author.changeset(params)
       |> Repo.insert()
