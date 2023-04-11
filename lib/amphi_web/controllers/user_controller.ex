@@ -4,6 +4,12 @@ defmodule AmphiWeb.UserController do
     alias Amphi.Users
     alias Amphi.Models.User
 
+    def show(conn, %{"id" => id}) do
+        user = Users.get_user!(id, [:author, posts: :paper])
+
+        render(conn, :show, user: user)
+    end
+
     def new(conn, _params) do
         changeset = Users.change_registration(%User{}, %{})
         render(conn, :new, changeset: changeset)

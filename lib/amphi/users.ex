@@ -3,8 +3,18 @@ defmodule Amphi.Users do
     alias Amphi.Repo
     alias Amphi.Models.User
 
-    def get_user(id) do
-        Repo.get(User, id)
+    def get_user(id, assocs \\ []) do
+        user = Repo.get(User, id)
+
+        case assocs do
+            [] -> user
+            assocs -> Repo.preload(user, assocs)
+        end
+    end
+
+    def get_user!(id, assocs \\ []) do
+        Repo.get!(User, id)
+        |> Repo.preload(assocs)
     end
 
     def get_user_by(attrs) do
