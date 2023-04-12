@@ -22,7 +22,6 @@ defmodule AmphiWeb.Router do
     get "/search", SearchController, :index
     get "/", PostController, :index
     resources "/sessions", SessionController, only: [:new, :create]
-
     resources "/posts", PostController, only: [:show, :new, :create]
     delete "/sessions/delete", SessionController, :delete
   end
