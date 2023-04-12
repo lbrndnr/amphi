@@ -17,31 +17,30 @@
   </:item>
 </.list>
 
-<canvas id="pdf-canvas"></canvas>
+<canvas id="pdf-canvas" class="mx-auto max-w-2xl"></canvas>
 
 <.back navigate={~p"/"}>Back to posts</.back>
 
 <script defer>
 
 window.onload = async () => {
-	var url = 'https://arxiv.org/pdf/2001.01653.pdf';
-  	console.log(url);
+	var url = "https://arxiv.org/pdf/2001.01653.pdf";
 	const loadingTask = window.pdfjsLib.getDocument(url);
 	const pdf = await loadingTask.promise;
 
 	// Load information from the first page.
 	const page = await pdf.getPage(1);
 
-	const scale = 1;
-	const viewport = page.getViewport(scale);
+	const params = {
+		scale: window.devicePixelRatio
+	};
+	const viewport = page.getViewport(params);
 
 	// Apply page dimensions to the `<canvas>` element.
 	const canvas = document.getElementById('pdf-canvas');
 	const context = canvas.getContext('2d');
-	canvas.height = 200;
-	canvas.width = 200;
-
-	console.log(viewport, viewport.height, viewport.width);
+	canvas.height = viewport.height;
+	canvas.width = viewport.width;
 
 	// Render the page into the `<canvas>` element.
 	const renderContext = {
@@ -49,7 +48,6 @@ window.onload = async () => {
 		viewport: viewport,
 	};
 	await page.render(renderContext);
-	console.log('Page rendered!');
 }
 
 </script>
