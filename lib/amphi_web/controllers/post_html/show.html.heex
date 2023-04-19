@@ -17,9 +17,12 @@
   </:item>
 </.list>
 
-<canvas id="pdf-canvas" class="mx-auto max-w-2xl"></canvas>
-<div id="text-layer" class="mx-auto max-w-2xl"></div>
+<div id="viewer-container" class="mx-auto max-w-2xl">
+  <div id="pdf-wrapper" class="pdfViewer"></div>
+</div>
+
 
 <.back navigate={~p"/"}>Back to posts</.back>
 
-<script defer phx-track-static type="text/javascript" src={~p"/assets/pdf-viewer.js"}></script>
+<link phx-track-static rel="stylesheet" href={~p"/assets/pdf.viewer.css"} />
+<script defer phx-track-static type="text/javascript" src={~p"/assets/pdf.js"}></script>
