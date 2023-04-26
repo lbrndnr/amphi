@@ -1,6 +1,6 @@
-import * as pdfjsLib from 'pdfjs-dist'
-import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker' // bundles pdf.worker correctly
-import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer'
+import * as pdfjsLib from 'pdfjs-dist';
+import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker'; // bundles pdf.worker correctly
+import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/pdf.worker.js'
 

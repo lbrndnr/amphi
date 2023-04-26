@@ -1,3 +1,5 @@
+<.back navigate={~p"/"}>Back to posts</.back>
+
 <.header>
   <%= @post.paper.title %>
   <:subtitle><%= @post.paper.abstract %></:subtitle>
@@ -21,7 +23,16 @@
   <div id="pdf-wrapper" class="pdfViewer"></div>
 </div>
 
-<.back navigate={~p"/"}>Back to posts</.back>
+<form>
+  <div class="py-4">
+    <label for="message" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Comment</label>
+    <textarea id="message" rows="4" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" placeholder="Write your thoughts here..."></textarea>
+  </div>
+
+  <button type="submit" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">
+    Publish post
+  </button>
+</form>
 
 <link phx-track-static rel="stylesheet" href={~p"/assets/pdf.viewer.css"} />
 <script defer phx-track-static type="text/javascript" src={~p"/assets/pdf.js"}></script>
