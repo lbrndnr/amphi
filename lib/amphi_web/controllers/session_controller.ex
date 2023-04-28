@@ -2,7 +2,7 @@ defmodule AmphiWeb.SessionController do
     use AmphiWeb, :controller
 
     def new(conn, _params) do
-        render(conn, :new)
+        render(assign(conn, :current_user, nil), :new)
     end
 
     def create(conn, %{"session" => %{"username" => username, "password" => password}}) do

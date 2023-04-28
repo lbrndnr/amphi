@@ -8,7 +8,6 @@ defmodule AmphiWeb.Router do
     plug :put_root_layout, {AmphiWeb.Layouts, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
-    plug AmphiWeb.Auth
   end
 
   pipeline :api do
@@ -16,14 +15,21 @@ defmodule AmphiWeb.Router do
   end
 
   scope "/", AmphiWeb do
-    pipe_through :browser
 
-    resources "/users", UserController, only: [:show, :new, :create]
-    get "/search", SearchController, :index
-    get "/", PostController, :index
-    resources "/sessions", SessionController, only: [:new, :create]
-    resources "/posts", PostController, only: [:show, :new, :create]
-    delete "/sessions/delete", SessionController, :delete
+    live_session :default, on_mount: AmphiWeb.InitAssigns do
+      pipe_through :browser
+      live "/", PostLive.Index, :index
+      live "/posts/:id", PostLive.Show, :show
+      resources "/users", UserController, only: [:show, :new, :create]
+      get "/search", SearchController, :index
+      resources "/sessions", SessionController, only: [:new, :create]
+      delete "/sessions/delete", SessionController, :delete
+    end
+
+    # live_session :authenticated, on_mount: {AmphiWeb.InitAssigns, :user} do
+    #   pipe_through [:browser, :require_user]
+    #   live "/profile", UserLive.Profile, :index
+    # end
   end
 
   # Other scopes may use custom stacks.

@@ -1,0 +1,29 @@
+
+<%= if @current_user do %>
+  <.header>
+    Feed
+    <:actions>
+      <.link href={~p"/posts/new"}>
+        <.button>New Post</.button>
+      </.link>
+    </:actions>
+  </.header>
+<% end %>
+
+<.table id="posts"
+  rows={@streams.posts}
+  row_click={fn {_id, post} -> JS.navigate(~p"/posts/#{post}") end}>
+  <:col :let={{_id, post}} label="Titlte"><%= post.paper.title %></:col>
+  <:col :let={{_id, post}} label="Likes"><%= post.likes %></:col>
+  <:action :let={{_id, post}}>
+    <div class="sr-only">
+      <.link navigate={~p"/posts/#{post}"}>Show</.link>
+    </div>
+    <.link navigate={~p"/posts/#{post}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, post}}>
+    <.link phx-click={JS.push("delete", value: %{id: post.id}) |> hide("##{id}")} data-confirm="Are you sure?">
+      Delete
+    </.link>
+  </:action>
+</.table>

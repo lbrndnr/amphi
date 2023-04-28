@@ -36,3 +36,16 @@
 
 <link phx-track-static rel="stylesheet" href={~p"/assets/pdf.viewer.css"} />
 <script defer phx-track-static type="text/javascript" src={~p"/assets/pdf.js"}></script>
+
+<!--
+<.modal :if={@live_action == :edit} id="post-modal" show on_cancel={JS.patch(~p"/posts/#{@post}")}>
+  <.live_component
+    module={AmphiWeb.PostLive.FormComponent}
+    id={@post.id}
+    title={@page_title}
+    action={@live_action}
+    post={@post}
+    patch={~p"/posts/#{@post}"}
+  />
+</.modal>
+-->
