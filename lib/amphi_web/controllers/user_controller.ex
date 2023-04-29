@@ -12,7 +12,7 @@ defmodule AmphiWeb.UserController do
 
     def new(conn, _params) do
         changeset = Users.change_registration(%User{}, %{})
-        render(conn, :new, changeset: changeset)
+        render(assign(conn, :current_user, nil), :new, changeset: changeset)
     end
 
     def create(conn, %{"user" => user_params}) do

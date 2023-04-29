@@ -34,14 +34,5 @@ window.onload = async () => {
 	pdfViewer.setPdfPage(page);
 	linkService.setViewer(pdfViewer);
 
-	document.addEventListener("selectionchange", onSelectionChange);
-
 	return pdfViewer.draw();
-}
-
-function onSelectionChange(event) {
-	const sel = document.getSelection();
-	console.log(sel.toString());
-
-	
 }

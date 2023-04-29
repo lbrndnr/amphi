@@ -8,8 +8,12 @@ defmodule Amphi.Comments do
 
   alias Amphi.Models.Comment
 
-  def list_comments do
-    Repo.all(Comment)
+  def list_comments(post, assocs \\ []) do
+    comments = Repo.all(Comment)
+    case assocs do
+      [] -> comments
+      assocs -> Enum.map(comments, fn c -> Repo.preload(c, assocs) end)
+    end
   end
 
   def get_comment!(id), do: Repo.get!(Comment, id)

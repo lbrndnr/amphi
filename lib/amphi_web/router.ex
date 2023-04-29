@@ -19,6 +19,7 @@ defmodule AmphiWeb.Router do
     live_session :default, on_mount: AmphiWeb.InitAssigns do
       pipe_through :browser
       live "/", PostLive.Index, :index
+      live "/posts/new", PostLive.Index, :new
       live "/posts/:id", PostLive.Show, :show
       resources "/users", UserController, only: [:show, :new, :create]
       get "/search", SearchController, :index
