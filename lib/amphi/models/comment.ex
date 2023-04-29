@@ -5,7 +5,7 @@ defmodule Amphi.Models.Comment do
   schema "comments" do
     belongs_to :user, Amphi.Models.User
     belongs_to :post, Amphi.Models.Post
-    belongs_to :responses, Amphi.Models.Comment
+    belongs_to :response, Amphi.Models.Comment
     field :likes, :integer, default: 0
     field :text, :string
 
@@ -14,7 +14,8 @@ defmodule Amphi.Models.Comment do
 
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:likes, :text])
-    |> validate_required([:likes, :text])
+    |> cast(attrs, [:user_id, :post_id, :response_id, :likes, :text])
+    |> validate_required([:user_id, :post_id, :likes, :text])
+    |> validate_length(:text, min: 1, max: 1000)
   end
 end

@@ -8,8 +8,9 @@ defmodule Amphi.Models.User do
         field :username, :string
         field :password, :string, virtual: true
         field :password_hash, :string
-        has_many :author, Amphi.Models.Author
+        has_many :authors, Amphi.Models.Author
         has_many :posts, Amphi.Models.Post
+        has_many :comments, Amphi.Models.Comment
 
         timestamps()
     end

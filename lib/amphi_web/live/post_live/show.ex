@@ -6,34 +6,36 @@ defmodule AmphiWeb.PostLive.Show do
   alias Amphi.Comments
 
   @impl true
-  def mount(_params, _session, socket) do
-    {:ok, socket}
-  end
-
-  @impl true
   def handle_params(%{"id" => id}, _, socket) do
     form = Comments.change_comment(%Comment{})
     |> to_form()
 
-    # comments = Comments.list_comments()
+    post = Posts.get_post!(id, [:paper, :user])
+    comments = Comments.list_comments(post, [:user])
 
     {:noreply, socket
-    |> assign(:page_title, page_title(socket.assigns.live_action))
+    |> assign(:page_title, post.paper.title)
     |> assign(:form, form)
-    |> assign(:post, Posts.get_post!(id, [:paper, :user]))}
+    |> assign(:post, post)
+    |> stream(:comments, comments)}
   end
 
   @impl true
   def handle_event("comment", %{"comment" => comment_params}, socket) do
-    params = %{comment_params |
-      "user" => socket.assigns.current_user,
-      "post" => socket.assigns.post
-    }
-    comment = Comments.create_comment(params)
+    params = Map.merge(comment_params, %{
+      "user_id" => socket.assigns.current_user.id,
+      "post_id" => socket.assigns.post.id,
+    })
 
-    {:noreply, socket}
+    case Comments.create_comment(params) do
+      {:ok, comment} ->
+        {:noreply, socket
+        |> put_flash(:info, "Comment created successfully")
+        |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
+      {:error, %Ecto.Changeset{} = changeset} ->
+        {:noreply, socket
+        |> put_flash(:error, "An error occurred: #{changeset.errors}")}
+    end
   end
 
-  defp page_title(:show), do: "Show Post"
-  defp page_title(:edit), do: "Edit Post"
 end

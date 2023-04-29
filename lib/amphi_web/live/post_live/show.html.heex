@@ -26,16 +26,26 @@
   <div id="pdf-wrapper" class="pdfViewer"></div>
 </div>
 
-<.simple_form
-  for={@form}
-  id="comment-form"
-  phx-submit="comment"
->
-  <.input field={@form[:text]} type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
-  <:actions>
-    <.button class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
-  </:actions>
-</.simple_form>
+<!-- why does id="comments" not work here? -->
+<.table id="comment-thread"
+  rows={@streams.comments}>
+  <:col :let={{_id, comment}} label="User"><%= comment.user.name %></:col>
+  <:col :let={{_id, comment}} label="Text"><%= comment.text %></:col>
+  <:col :let={{_id, comment}} label="Likes"><%= comment.likes %></:col>
+</.table>
+
+<%= if @current_user do %>
+  <.simple_form
+    for={@form}
+    id="comment-form"
+    phx-submit="comment"
+  >
+    <.input field={@form[:text]} type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
+    <:actions>
+      <.button class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
+    </:actions>
+  </.simple_form>
+<% end %>
 
 <!--
 <.modal :if={@live_action == :edit} id="post-modal" show on_cancel={JS.patch(~p"/posts/#{@post}")}>

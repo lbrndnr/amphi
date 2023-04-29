@@ -3,13 +3,14 @@ defmodule Amphi.Comments do
   The Comments context.
   """
 
-  import Ecto.Query, warn: false
+  import Ecto.Query, only: [from: 2]
   alias Amphi.Repo
 
   alias Amphi.Models.Comment
 
   def list_comments(post, assocs \\ []) do
-    comments = Repo.all(Comment)
+    query = from c in Comment, where: c.post_id == ^post.id
+    comments = Repo.all(query)
     case assocs do
       [] -> comments
       assocs -> Enum.map(comments, fn c -> Repo.preload(c, assocs) end)
@@ -18,8 +19,8 @@ defmodule Amphi.Comments do
 
   def get_comment!(id), do: Repo.get!(Comment, id)
 
-  def create_comment(attrs \\ %{}) do
-    %Comment{}
+  def create_comment(attrs \\ %{}, assocs \\ []) do
+    comment = %Comment{}
     |> Comment.changeset(attrs)
     |> Repo.insert()
   end
