@@ -1,5 +1,4 @@
 <link phx-track-static rel="stylesheet" href={~p"/assets/pdf.viewer.css"} />
-<script defer phx-track-static type="text/javascript" src={~p"/assets/pdf.js"}></script>
 
 <.back navigate={~p"/"}>Back to posts</.back>
 
@@ -24,7 +23,7 @@
 
 <%= if @post.paper.pdf_url do %>
   <div class="mx-auto">
-    <div id="pdf-wrapper" class="pdfViewer" pdf_url={@post.paper.pdf_url}></div>
+    <div id="pdf-wrapper" class="pdfViewer" phx-hook="PDFViewer" pdf_url={@post.paper.pdf_url}></div>
   </div>
 <% end %>
 
