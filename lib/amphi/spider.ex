@@ -65,10 +65,16 @@ defmodule Spider do
     |> Floki.find(".authors a")
     |> Enum.map(&Floki.text/1)
 
+    url = html
+    |> Floki.find(".download-pdf")
+    |> Floki.attribute("href")
+    |> Enum.at(0)
+
     %{
        "title" => title,
        "abstract" => abstract,
        "authors" => Enum.map(author_names, fn a -> %{name: a} end),
+       "pdf_url" => "https://arxiv.org#{url}.pdf"
     }
   end
 

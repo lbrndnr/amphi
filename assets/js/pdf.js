@@ -6,8 +6,11 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/pdf.worker.js'
 
 window.onload = async () => {
 	const container = document.querySelector('#pdf-wrapper');
+	if (container == null) {
+		return
+	}
 
-	const url = "https://arxiv.org/pdf/2001.01653.pdf";
+	const url = container.getAttribute("pdf_url");
 	const pdf = await pdfjsLib.getDocument(url).promise;
 
 	// Load information from the first page.

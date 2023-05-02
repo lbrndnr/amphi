@@ -22,9 +22,11 @@
   </:item>
 </.list>
 
-<div class="mx-auto">
-  <div id="pdf-wrapper" class="pdfViewer"></div>
-</div>
+<%= if @post.paper.pdf_url do %>
+  <div class="mx-auto">
+    <div id="pdf-wrapper" class="pdfViewer" pdf_url={@post.paper.pdf_url}></div>
+  </div>
+<% end %>
 
 <!-- why does id="comments" not work here? -->
 <.table id="comment-thread"

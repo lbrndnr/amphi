@@ -22,6 +22,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :title, :string
       add :abstract, :text
       add :url, :string, null: false
+      add :pdf_url, :string
       add :post_id, references(:posts)
 
       timestamps()
