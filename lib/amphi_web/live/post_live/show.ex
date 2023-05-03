@@ -26,12 +26,12 @@ defmodule AmphiWeb.PostLive.Show do
     comment_id = String.to_integer(comment_id)
     IO.inspect(comment_id)
     case Comments.get_comment!(comment_id) do
+      nil -> {:noreply, socket |> put_flash(:error, "An error occurred")}
       comment ->
         case Comments.delete_comment(comment)do
           {:ok, _} -> {:noreply, socket |> put_flash(:info, "Comment deleted.")}
           {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
         end
-      {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
 
