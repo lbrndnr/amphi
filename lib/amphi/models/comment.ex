@@ -6,7 +6,8 @@ defmodule Amphi.Models.Comment do
     belongs_to :user, Amphi.Models.User
     belongs_to :post, Amphi.Models.Post
     belongs_to :response, Amphi.Models.Comment
-    field :likes, :integer, default: 0
+    many_to_many :liked_by_users, Amphi.Models.User, join_through: "comments_likes"
+    field :likes, :integer, default: 0, virtual: true
     field :text, :string
 
     timestamps()

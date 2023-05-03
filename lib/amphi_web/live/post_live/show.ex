@@ -22,9 +22,22 @@ defmodule AmphiWeb.PostLive.Show do
   end
 
   @impl true
+  def handle_event("like_comment", %{"id" => comment_id}, socket) do
+    comment_id = String.to_integer(comment_id)
+    user = socket.assigns.current_user
+    case Comments.get_comment!(comment_id) do
+      nil -> {:noreply, socket |> put_flash(:error, "An error occurred")}
+      comment ->
+        case Users.like_comment(user, comment) do
+          {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked comment.")}
+          {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
+        end
+    end
+  end
+
+  @impl true
   def handle_event("delete", %{"id" => comment_id}, socket) do
     comment_id = String.to_integer(comment_id)
-    IO.inspect(comment_id)
     case Comments.get_comment!(comment_id) do
       nil -> {:noreply, socket |> put_flash(:error, "An error occurred")}
       comment ->

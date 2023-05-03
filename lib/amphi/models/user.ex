@@ -12,6 +12,7 @@ defmodule Amphi.Models.User do
         has_many :posts, Amphi.Models.Post
         has_many :comments, Amphi.Models.Comment
         many_to_many :liked_posts, Amphi.Models.Post, join_through: "posts_likes"
+        many_to_many :liked_comments, Amphi.Models.Comment, join_through: "comments_likes"
 
         timestamps()
     end

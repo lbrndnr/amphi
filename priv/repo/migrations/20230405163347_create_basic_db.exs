@@ -56,6 +56,11 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps()
     end
 
+    create table(:comments_likes, primary_key: false) do
+      add :user_id, references(:users, on_delete: :delete_all), primary_key: true
+      add :comment_id, references(:comments, on_delete: :delete_all), primary_key: true
+    end
+
     create index(:comments, [:post_id])
     create index(:comments, [:response_id])
     create index(:comments, [:user_id])
@@ -65,5 +70,6 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create unique_index(:users, [:username, :email])
     create unique_index(:papers_authors, [:paper_id, :author_id])
     create unique_index(:posts_likes, [:user_id, :post_id])
+    create unique_index(:comments_likes, [:user_id, :comment_id])
   end
 end

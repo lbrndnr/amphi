@@ -63,6 +63,14 @@ defmodule Amphi.Users do
         |> Repo.update
     end
 
+    def like_comment(user, comment) do
+        user = Repo.preload(user, :liked_comments)
+
+        Changeset.change(user)
+        |> Changeset.put_assoc(:liked_comments, [comment | user.liked_comments])
+        |> Repo.update
+    end
+
     def unlike_post(user, post) do
         user = Repo.preload(user, :liked_posts)
         liked_posts = user.liked_posts |> Enum.filter(fn p -> p.id != post.id end)
