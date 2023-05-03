@@ -3,6 +3,7 @@ defmodule AmphiWeb.PostLive.Show do
 
   alias Amphi.Models.Comment
   alias Amphi.Posts
+  alias Amphi.Users
   alias Amphi.Comments
 
   @impl true
@@ -22,22 +23,11 @@ defmodule AmphiWeb.PostLive.Show do
 
   @impl true
   def handle_event("like", _, socket) do
-    params = %{
-      "user_id" => socket.assigns.current_user.id,
-      "post_id" => socket.assigns.post.id,
-    }
-
-    # TODO update value on website without reloading
-    case Posts.like_post(params) do
-      {:ok, _post} ->
-        {:noreply, socket
-        |> put_flash(:info, "Paper liked")}
-      {:already_liked, _post} ->
-        {:noreply, socket
-        |> put_flash(:info, "Removing like")}
-      {:error, %Ecto.Changeset{} = changeset} ->
-          {:noreply, socket
-          |> put_flash(:error, "An error occurred: #{changeset.errors}")}
+    user = socket.assigns.current_user
+    post = socket.assigns.post
+    case Users.like_post(user, post) do
+      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked.")}
+      {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
 

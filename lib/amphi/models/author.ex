@@ -8,7 +8,7 @@ defmodule Amphi.Models.Author do
         field :email, :string
         field :affiliation, :string
         belongs_to :user, Amphi.Models.User
-        many_to_many :papers, Amphi.Models.Paper, join_through: "paper_authors"
+        many_to_many :papers, Amphi.Models.Paper, join_through: "papers_authors"
 
         timestamps()
     end

@@ -17,7 +17,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps()
     end
 
-    create table(:post_likes, primary_key: false) do
+    create table(:posts_likes, primary_key: false) do
       add :user_id, references(:users, on_delete: :delete_all), primary_key: true
       add :post_id, references(:posts, on_delete: :delete_all), primary_key: true
     end
@@ -41,7 +41,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps()
     end
 
-    create table(:paper_authors, primary_key: false) do
+    create table(:papers_authors, primary_key: false) do
       add :paper_id, references(:papers, on_delete: :delete_all), primary_key: true
       add :author_id, references(:authors, on_delete: :delete_all), primary_key: true
     end
@@ -63,5 +63,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create unique_index(:papers, [:url])
     create unique_index(:papers, [:post_id])
     create unique_index(:users, [:username, :email])
+    create unique_index(:papers_authors, [:paper_id, :author_id])
+    create unique_index(:posts_likes, [:user_id, :post_id])
   end
 end

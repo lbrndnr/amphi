@@ -2,6 +2,7 @@ defmodule Amphi.Users do
 
     alias Amphi.Repo
     alias Amphi.Models.User
+    alias Ecto.Changeset
 
     def get_user(id, assocs \\ []) do
         user = Repo.get(User, id)
@@ -52,6 +53,23 @@ defmodule Amphi.Users do
                 Pbkdf2.no_user_verify()
                 {:error, :not_found}
         end
+    end
+
+    def like_post(user, post) do
+        user = Repo.preload(user, :liked_posts)
+
+        Changeset.change(user)
+        |> Changeset.put_assoc(:liked_posts, [post | user.liked_posts])
+        |> Repo.update
+    end
+
+    def unlike_post(user, post) do
+        user = Repo.preload(user, :liked_posts)
+        liked_posts = user.liked_posts |> Enum.filter(fn p -> p.id != post.id end)
+
+        Changeset.change(user)
+        |> Changeset.put_assoc(:liked_posts, liked_posts)
+        |> Repo.update
     end
 
 end
