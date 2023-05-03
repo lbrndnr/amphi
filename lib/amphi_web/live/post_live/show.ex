@@ -21,6 +21,27 @@ defmodule AmphiWeb.PostLive.Show do
   end
 
   @impl true
+  def handle_event("like", _, socket) do
+    params = %{
+      "user_id" => socket.assigns.current_user.id,
+      "post_id" => socket.assigns.post.id,
+    }
+
+    # TODO update value on website without reloading
+    case Posts.like_post(params) do
+      {:ok, _post} ->
+        {:noreply, socket
+        |> put_flash(:info, "Paper liked")}
+      {:already_liked, _post} ->
+        {:noreply, socket
+        |> put_flash(:info, "Removing like")}
+      {:error, %Ecto.Changeset{} = changeset} ->
+          {:noreply, socket
+          |> put_flash(:error, "An error occurred: #{changeset.errors}")}
+    end
+  end
+
+  @impl true
   def handle_event("comment", %{"comment" => comment_params}, socket) do
     params = Map.merge(comment_params, %{
       "user_id" => socket.assigns.current_user.id,

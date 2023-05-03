@@ -14,6 +14,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create table(:posts) do
       add :user_id, references(:users, on_delete: :nothing), null: false
       add :likes, :integer
+      add :liked_by, {:array, :integer}
 
       timestamps()
     end

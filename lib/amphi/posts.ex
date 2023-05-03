@@ -36,4 +36,18 @@ defmodule Amphi.Posts do
     Post.changeset(post, attrs)
   end
 
+  def like_post(params) do
+    post = get_post!(params["post_id"])
+    IO.inspect(post.liked_by)
+    if not params["user_id"] in post.liked_by do
+      upd = %{likes: post.likes + 1, user_id: params["user_id"], liked_by: post.liked_by ++ [params["user_id"]]}
+      update_post(post, upd)
+    else
+      upd = %{likes: post.likes - 1, user_id: params["user_id"], liked_by: Enum.reject(post.liked_by, &(&1 == params["user_id"]))}
+      update_post(post, upd)
+      {:already_liked, post}
+    end
+
+  end
+
 end
