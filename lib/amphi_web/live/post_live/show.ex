@@ -22,38 +22,32 @@ defmodule AmphiWeb.PostLive.Show do
   end
 
   @impl true
-  def handle_event("like_comment", %{"id" => comment_id}, socket) do
-    comment_id = String.to_integer(comment_id)
+  def handle_event("like_post", _, socket) do
     user = socket.assigns.current_user
-    case Comments.get_comment!(comment_id) do
-      nil -> {:noreply, socket |> put_flash(:error, "An error occurred")}
-      comment ->
-        case Users.like_comment(user, comment) do
-          {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked comment.")}
-          {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
-        end
+    post = socket.assigns.post
+    case Users.like_post(user, post) do
+      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked.")}
+      {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
+    end
+  end
+
+  @impl true
+  def handle_event("like_comment", %{"id" => comment_id}, socket) do
+    user = socket.assigns.current_user
+    comment = Comments.get_comment!(comment_id)
+    case Users.like_comment(user, comment) do
+      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked comment.")}
+      {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
 
   @impl true
   def handle_event("delete", %{"id" => comment_id}, socket) do
-    comment_id = String.to_integer(comment_id)
-    case Comments.get_comment!(comment_id) do
-      nil -> {:noreply, socket |> put_flash(:error, "An error occurred")}
-      comment ->
-        case Comments.delete_comment(comment)do
-          {:ok, _} -> {:noreply, socket |> put_flash(:info, "Comment deleted.")}
-          {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
-        end
-    end
-  end
-
-  @impl true
-  def handle_event("like", _, socket) do
-    user = socket.assigns.current_user
-    post = socket.assigns.post
-    case Users.like_post(user, post) do
-      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked.")}
+    comment = Comments.get_comment!(comment_id)
+    case Comments.delete_comment(comment) do
+      {:ok, _} -> {:noreply, socket
+      |> stream_delete(:comments, comment)
+      |> put_flash(:info, "Comment deleted.")}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
