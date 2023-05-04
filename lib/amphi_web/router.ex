@@ -21,7 +21,8 @@ defmodule AmphiWeb.Router do
       live "/", PostLive.Index, :index
       live "/posts/new", PostLive.Index, :new
       live "/posts/:id", PostLive.Show, :show
-      resources "/users", UserController, only: [:show, :new, :create]
+      live "/users/new", UserLive.New, :new
+      live "/users/:id", UserLive.Show, :show
       get "/search", SearchController, :index
       resources "/sessions", SessionController, only: [:new, :create]
       delete "/sessions/delete", SessionController, :delete

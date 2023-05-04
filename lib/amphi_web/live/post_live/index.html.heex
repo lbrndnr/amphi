@@ -20,7 +20,7 @@
 <.modal :if={@live_action == :new} id="post-modal" show>
   <.live_component
     module={AmphiWeb.PostLive.FormComponent}
-    id="post-modal-comp"
+    id={@post.id || :new}
     title={@page_title}
     action={@live_action}
     post={@post}
