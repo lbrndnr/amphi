@@ -26,7 +26,11 @@ defmodule AmphiWeb.PostLive.Show do
     user = socket.assigns.current_user
     post = socket.assigns.post
     case Users.like_post(user, post) do
-      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked.")}
+      {:ok, _user} ->
+        post = Posts.get_post!(post.id, [:paper, :user])
+        {:noreply, socket
+        |> put_flash(:info, "Liked.")
+        |> assign(:post, post)}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
@@ -36,7 +40,12 @@ defmodule AmphiWeb.PostLive.Show do
     user = socket.assigns.current_user
     comment = Comments.get_comment!(comment_id)
     case Users.like_comment(user, comment) do
-      {:ok, _user} -> {:noreply, socket |> put_flash(:info, "Liked comment.")}
+      {:ok, _user} ->
+        # New comment with updated likes count
+        comment = Comments.get_comment!(comment_id)
+        {:noreply, socket
+        |> put_flash(:info, "Liked comment.")
+        |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end

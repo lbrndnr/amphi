@@ -29,7 +29,7 @@
 
 <!-- why does id="comments" not work here? -->
 <.table id="comment-thread"
-  rows={@streams.comments |> Enum.sort_by(& elem(&1, 1).likes, &>=/2) }>
+  rows={@streams.comments}>
   <:col :let={{_id, comment}} label="User"><%= comment.user.name %></:col>
   <:col :let={{_id, comment}} label="Text"><%= comment.text %></:col>
   <:col :let={{_id, comment}} label="Likes"><%= comment.likes %></:col>
