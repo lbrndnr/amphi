@@ -23,7 +23,7 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import Hooks from "./hooks"
 import * as pdfjsLib from 'pdfjs-dist';
-import * as pdfjsWorker from 'pdfjs-dist/build/pdf.worker'; // bundles pdf.worker correctly
+import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry'; // bundles pdf.worker correctly
 
 let csrfToken = document.querySelector("meta[name='csrf-token']").getAttribute("content")
 let liveSocket = new LiveSocket("/live", Socket, {hooks: Hooks, params: {_csrf_token: csrfToken}})
@@ -34,7 +34,7 @@ window.addEventListener("phx:page-loading-start", _info => topbar.show(300))
 window.addEventListener("phx:page-loading-stop", _info => topbar.hide())
 
 // Set global worker for pdf.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = '../assets/pdf.worker.js'
+pdfjsLib.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 // connect if there are any LiveViews on the page
 liveSocket.connect()

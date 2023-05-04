@@ -69,8 +69,8 @@ defmodule Amphi.MixProject do
       "ecto.reset": ["ecto.drop", "ecto.setup"],
       test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
-      "assets.build": ["npm install --prefix assets", "tailwind default", "esbuild default"],
-      "assets.deploy": ["tailwind default --minify", "esbuild default --minify", "phx.digest"]
+      "assets.build": ["cmd npm install --prefix assets", "tailwind default", "esbuild default", "cmd cp assets/node_modules/pdfjs-dist/web/pdf_viewer.css priv/static/assets/pdf_viewer.css"],
+      "assets.deploy": ["cmd npm install --prefix assets", "tailwind default --minify", "esbuild default --minify", "cmd cp assets/node_modules/pdfjs-dist/web/pdf_viewer.css priv/static/assets/pdf_viewer.css", "phx.digest"]
     ]
   end
 end

@@ -10,7 +10,7 @@
   </.header>
 <% end %>
 
-<.table id="post-thread"
+<.table id="post-stream"
   rows={@streams.posts}
   row_click={fn {_id, post} -> JS.navigate(~p"/posts/#{post}") end}>
   <:col :let={{_id, post}} label="Title"><%= post.paper.title %></:col>
