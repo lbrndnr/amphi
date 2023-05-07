@@ -23,7 +23,7 @@
 
 <%= if @post.paper.pdf_url do %>
   <div id="pdf-viewer" class="mx-auto" phx-hook="PDFViewer">
-    <div id="container" pdf_url={@post.paper.pdf_url}></div>
+    <div id="container" class="pdfViewer" pdf_url={@post.paper.pdf_url}></div>
     <div class="flex flex-row mx-auto">
       <.button id="prev" type="button" class="bg-gray-800 text-white rounded-l-md border-r border-gray-100 py-2 hover:bg-red-700 hover:text-white px-3">
         <div class="flex flex-row align-middle">
