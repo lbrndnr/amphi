@@ -19,3 +19,13 @@
 .btn-blue:hover {
     @apply bg-blue-700;
 }
+
+#pdf-container {
+    position: absolute;
+    overflow: auto;
+    height: 400px;
+}
+
+#pdf-viewer {
+    height: 400px;
+}
