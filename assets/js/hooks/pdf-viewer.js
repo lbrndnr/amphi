@@ -2,30 +2,23 @@ import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
 const PDFViewer = {
-	getContainerElement() {
-		return this.el.querySelector("#pdf-container");
-	},
-	getViewerElement() {
-		return this.el.querySelector(".pdfViewer");
-	},
-	getUrl() {
-		return this.getContainerElement().getAttribute("pdf_url");
-	},
 	mounted() {	
+		this.containerElement = this.el.querySelector("#pdf-container");
+		this.viewerElement = this.el.querySelector(".pdfViewer");
+		this.url = this.containerElement.getAttribute("pdf_url");
+
 		this.initPDFViewer();
-		pdfjsLib.getDocument(this.getUrl()).promise.then((pdf) => {
+		pdfjsLib.getDocument(this.url).promise.then((pdf) => {
 			this.viewer.setDocument(pdf);
 		});
 	},
 	initPDFViewer() {
-		if (this.viewer != null) return;
-
 		const eventBus = new pdfjsViewer.EventBus();
 		const linkService = new pdfjsViewer.PDFLinkService({
 			eventBus,
 		});	
-		const container = this.getContainerElement();
-		const viewer = this.getViewerElement();
+		const container = this.containerElement;
+		const viewer = this.viewerElement;
 		this.viewer = new pdfjsViewer.PDFViewer({
 			container,
 			viewer,
