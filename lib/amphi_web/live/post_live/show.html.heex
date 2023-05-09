@@ -22,10 +22,7 @@
 </.list>
 
 <%= if @post.paper.pdf_url do %>
-  <div id="pdf-viewer" class="mx-auto" phx-hook="PDFViewer">
-    <div id="pdf-container" pdf_url={@post.paper.pdf_url}>
-      <div class="pdfViewer"></div>
-    </div>
+  <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
   </div>
 <% end %>
 
