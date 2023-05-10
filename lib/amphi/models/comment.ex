@@ -9,13 +9,14 @@ defmodule Amphi.Models.Comment do
     many_to_many :liked_by_users, Amphi.Models.User, join_through: "comments_likes"
     field :likes, :integer, default: 0, virtual: true
     field :text, :string
+    field :rects, {:array, :float}
 
     timestamps()
   end
 
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:user_id, :post_id, :response_id, :likes, :text])
+    |> cast(attrs, [:user_id, :post_id, :response_id, :likes, :text, :rects])
     |> validate_required([:user_id, :post_id, :likes, :text])
     |> validate_length(:text, min: 1, max: 1000)
   end

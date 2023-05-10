@@ -23,6 +23,13 @@
 
 <%= if @post.paper.pdf_url do %>
   <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
+    <div id="pdf-containers"></div>
+    <%= if @current_user do %>
+      <input id="comment-input" type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
+
+      <.button id="comment-button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
+      <.button phx-click="like_post" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Like</.button>
+    <% end %>
   </div>
 <% end %>
 
@@ -43,21 +50,6 @@
     <% end %>
   </:col>
 </.table>
-
-<%= if @current_user do %>
-  <.simple_form
-    for={@form}
-    id="comment-form"
-    phx-submit="comment"
-  >
-    <.input field={@form[:text]} type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
-    <:actions>
-      <.button class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
-    </:actions>
-  </.simple_form>
-
-  <.button phx-click="like_post" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Like</.button>
-<% end %>
 
 <!--
 <.modal :if={@live_action == :edit} id="post-modal" show on_cancel={JS.patch(~p"/posts/#{@post}")}>

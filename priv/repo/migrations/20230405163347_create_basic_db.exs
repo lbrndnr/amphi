@@ -52,6 +52,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :response_id, references(:comments, on_delete: :nothing)
       add :likes, :integer
       add :text, :text
+      add :rects, {:array, :float}
 
       timestamps()
     end
