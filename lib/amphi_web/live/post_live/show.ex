@@ -67,6 +67,7 @@ defmodule AmphiWeb.PostLive.Show do
       "user_id" => socket.assigns.current_user.id,
       "post_id" => socket.assigns.post.id,
     })
+    IO.inspect(params)
 
     case Comments.create_comment(params) do
       {:ok, comment} ->

@@ -53,6 +53,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :likes, :integer
       add :text, :text
       add :rects, {:array, :float}
+      add :comment_height, :integer
 
       timestamps()
     end

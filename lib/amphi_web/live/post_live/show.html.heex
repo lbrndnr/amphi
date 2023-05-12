@@ -1,65 +1,87 @@
 <link phx-track-static rel="stylesheet" href={~p"/assets/pdf_viewer.css"} />
 
-<.back navigate={~p"/"}>Back to posts</.back>
 
-<.header>
-  <%= @post.paper.title %>
-  <:subtitle><%= @post.paper.abstract %></:subtitle>
-  <:actions>
-    <.link href={~p"/posts/#{@post}/edit"}>
-      <.button>Edit post</.button>
-    </.link>
-  </:actions>
-</.header>
+<div class="grid-container">
+  <div class="left-column">
+    <.back navigate={~p"/"}>Back to posts</.back>
+    <.header>
+      <%= @post.paper.title %>
+      <:subtitle><%= @post.paper.abstract %></:subtitle>
+      <:actions>
+        <.link href={~p"/posts/#{@post}/edit"}>
+          <.button>Edit post</.button>
+        </.link>
+      </:actions>
+    </.header>
 
-<.list>
-  <:item title="Likes"><%= @post.likes %></:item>
-  <:item title="User">
-    <.link href={~p"/users/#{@post.user}"}>
-      <%= @post.user.name %>
-    </.link>
-  </:item>
-</.list>
+    <.list>
+      <:item title="Likes"><%= @post.likes %></:item>
+      <:item title="User">
+        <.link href={~p"/users/#{@post.user}"}>
+          <%= @post.user.name %>
+        </.link>
+      </:item>
+    </.list>
 
-<%= if @post.paper.pdf_url do %>
-  <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
-    <div id="pdf-containers"></div>
-    <%= if @current_user do %>
-      <input id="comment-input" type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
 
-      <.button id="comment-button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
-      <.button phx-click="like_post" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Like</.button>
+    <%= if @post.paper.pdf_url do %>
+      <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
+        <!-- PDF viewer content -->
+        <%= if @post.paper.pdf_url do %>
+          <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
+            <div id="pdf-containers"></div>
+          </div>
+        <% end %>
+      </div>
     <% end %>
+    <!--
+    <.modal :if={@live_action == :edit} id="post-modal" show on_cancel={JS.patch(~p"/posts/#{@post}")}>
+      <.live_component
+        module={AmphiWeb.PostLive.FormComponent}
+        id={@post.id}
+        title={@page_title}
+        action={@live_action}
+        post={@post}
+        patch={~p"/posts/#{@post}"}
+      />
+    </.modal>
+    -->
   </div>
-<% end %>
+  <div class="right-column">
 
-<!-- why does id="comments" not work here? -->
-<.table id="comment-stream"
-  rows={@streams.comments}>
-  <:col :let={{_id, comment}} label="User"><%= comment.user.name %></:col>
-  <:col :let={{_id, comment}} label="Text"><%= comment.text %></:col>
-  <:col :let={{_id, comment}} label="Likes"><%= comment.likes %></:col>
-  <:col :let={{_id, comment}} label="Delete">
-    <%= if @current_user && @current_user.id==comment.user.id do %>
-      <.button phx-click="delete" phx-value-id={comment.id} class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Delete</.button>
-    <% end %>
-  </:col>
-    <:col :let={{_id, comment}} label="Like">
+    <!-- why does id="comments" not work here? -->
+    <.table id="comment-stream" rows={@streams.comments}>
+      <:col :let={{_id, comment}} label="User">
+        <div style={"position: absolute; top: #{comment.comment_height}px"}><%= comment.user.name %></div>
+      </:col>
+      <:col :let={{_id, comment}} label="Text">
+        <div style={"position: absolute; top: #{comment.comment_height}px"}><%= comment.text %></div>
+      </:col>
+      <:col :let={{_id, comment}} label="Likes">
+        <div style={"position: absolute; top: #{comment.comment_height}px"}><%= comment.likes %></div>
+      </:col>
+      <:col :let={{_id, comment}} label="Delete">
+        <div style={"position: absolute; top: #{comment.comment_height}px"}>
+          <%= if @current_user && @current_user.id==comment.user.id do %>
+            <.button phx-click="delete" phx-value-id={comment.id} class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Delete</.button>
+          <% end %>
+        </div>
+      </:col>
+        <:col :let={{_id, comment}} label="Like">
+          <div style={"position: absolute; top: #{comment.comment_height}px"}>
+            <%= if @current_user do %>
+              <.button phx-click="like_comment" phx-value-id={comment.id} class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Like</.button>
+            <% end %>
+          </div>
+      </:col>
+    </.table>
+
     <%= if @current_user do %>
-      <.button phx-click="like_comment" phx-value-id={comment.id} class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Like</.button>
+      <div id="comment-form">
+        <input id="comment-input" type="textarea" label="Comment" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" />
+        <.button id="comment-button" class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
+      </div>
     <% end %>
-  </:col>
-</.table>
 
-<!--
-<.modal :if={@live_action == :edit} id="post-modal" show on_cancel={JS.patch(~p"/posts/#{@post}")}>
-  <.live_component
-    module={AmphiWeb.PostLive.FormComponent}
-    id={@post.id}
-    title={@page_title}
-    action={@live_action}
-    post={@post}
-    patch={~p"/posts/#{@post}"}
-  />
-</.modal>
--->
+  </div>
+</div>
