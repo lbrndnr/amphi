@@ -1,0 +1,43 @@
+{
+    "title": "Re-architecting I/O Caches for Emerging Fast Storage Devices",
+    "keywords": ["I/O Cache", "All-Flash Storage System", "Solid-State Drive", "Storage Area Network", "RAM Disk", "Persistent Memory", "Performance"],
+    "ccs": ["Information systems", "Information storage systems", "Hardware", "Memory and dense storage"],
+    "authors": [
+        {
+            "name": "Mohammadamin Ajdari",
+            "email": "m.ajdari@sharif.edu",
+            "affiliation": "HPDS Research & Sharif University of Technology",
+            "location": "Tehran, Iran"
+        },
+        {
+            "name": "Pouria Peykani Sani",
+            "email": "p.peyk@sharif.edu",
+            "affiliation": "Sharif University of Technology",
+            "location": "Tehran, Iran"
+        },
+        {
+            "name": "Amirhossein Moradi",
+            "email": "am.moradi@sharif.edu",
+            "affiliation": "Sharif University of Technology",
+            "location": "Tehran, Iran"
+        },
+        {
+            "name": "Masoud Khanalizadeh Imani",
+            "email": "masoud.khanalizadeh@sharif.edu",
+            "affiliation": "Sharif University of Technology",
+            "location": "Tehran, Iran"
+        },
+        {
+            "name": "Amir Hossein Bazkhanei",
+            "email": "amir.bazkhanei@sharif.edu",
+            "affiliation": "HPDS Research & Sharif University of Technology",
+            "location": "Tehran, Iran"
+        },
+        {
+            "name": "Hossein Asadi",
+            "email": "asadi@sharif.edu",
+            "affiliation": "Sharif University of Technology",
+            "location": "Tehran, Iran"
+        }
+    ]
+}
