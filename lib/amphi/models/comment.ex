@@ -11,13 +11,14 @@ defmodule Amphi.Models.Comment do
     field :text, :string
     field :rects, {:array, :float}
     field :comment_height, :integer
+    field :page_idx, :integer
 
     timestamps()
   end
 
   def changeset(comment, attrs) do
     comment
-    |> cast(attrs, [:user_id, :post_id, :response_id, :likes, :text, :rects, :comment_height])
+    |> cast(attrs, [:user_id, :post_id, :response_id, :likes, :text, :rects, :comment_height, :page_idx])
     |> validate_required([:user_id, :post_id, :likes, :text])
     |> validate_length(:text, min: 1, max: 1000)
   end

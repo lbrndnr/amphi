@@ -22,6 +22,17 @@ defmodule AmphiWeb.PostLive.Show do
   end
 
   @impl true
+  @spec handle_event(<<_::48, _::_*8>>, any, map) :: {:noreply, map}
+  def handle_event("get_comment_rects", _, socket) do
+    post = socket.assigns.post
+    comments = Comments.list_comments(post)
+    rects = Enum.map(comments, &(&1.rects))
+    idx = Enum.map(comments, &(&1.page_idx))
+    {:noreply, push_event(socket, "get_comment_rects", %{rects: rects, idx: idx})}
+  end
+
+
+  @impl true
   def handle_event("like_post", _, socket) do
     user = socket.assigns.current_user
     post = socket.assigns.post

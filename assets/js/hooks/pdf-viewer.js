@@ -43,6 +43,17 @@ const PDFViewer = {
 				document.addEventListener('mousemove', handleMouseMove);
 			}
 		}.bind(this));
+
+		this.handleEvent("get_comment_rects", (data) => {
+			console.log(data);
+			this.rects = data;
+			for(let i = 0; i < data.idx.length; ++i){
+				this.highlightRect(data.idx[i], data.rects[i], "rgba(255, 255, 0, 0.5)");
+			}
+
+		});
+		this.pushEvent("get_comment_rects");
+
 	},
 	highlightCurrentSelection(event) {
 		const selectionRects = window.getSelection().getRangeAt(0).getClientRects();
@@ -61,7 +72,6 @@ const PDFViewer = {
 			}
 		}
 
-		console.log(idx)
 		if (idx == null) { return }
 		const viewport = this.viewers[idx].viewport;
 		const pageRect = this.viewers[idx].canvas.getClientRects()[0];
@@ -78,7 +88,8 @@ const PDFViewer = {
 		}
 
 		this.rects = pdfRects;
-		this.commentHeight = Math.round(y);
+		this.commentHeight = Math.round(y)-100;
+		this.page_idx = idx;
 
 		return pdfRects;
 	},
@@ -150,8 +161,9 @@ const PDFViewer = {
 		if(this.rects){
 			const payload = {
 				"text": this.commentInput.value,
-				"rects": this.rects.flat(),
-				"comment_height": this.commentHeight
+				"rects": this.rects.flat().map((num) => Math.round(num)),
+				"comment_height": this.commentHeight,
+				"page_idx": this.page_idx
 			};
 			this.pushEvent("comment", {"comment": payload});
 	

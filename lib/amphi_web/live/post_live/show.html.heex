@@ -24,14 +24,10 @@
     </.list>
 
 
+    <!-- PDF viewer content -->
     <%= if @post.paper.pdf_url do %>
       <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
-        <!-- PDF viewer content -->
-        <%= if @post.paper.pdf_url do %>
-          <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} class="mx-auto" phx-hook="PDFViewer">
-            <div id="pdf-containers"></div>
-          </div>
-        <% end %>
+        <div id="pdf-containers"></div>
       </div>
     <% end %>
     <!--

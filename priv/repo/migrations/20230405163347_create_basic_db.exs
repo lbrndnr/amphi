@@ -54,6 +54,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :text, :text
       add :rects, {:array, :float}
       add :comment_height, :integer
+      add :page_idx, :integer
 
       timestamps()
     end
