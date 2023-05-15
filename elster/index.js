@@ -20,52 +20,81 @@ async function downloadFile(fileUrl, outputLocationPath) {
   });
 }
 
-const uri = "mongodb://amphi:amphi@localhost:27017";
-const client = new MongoClient(uri,  {
-  serverApi: {
-      version: ServerApiVersion.v1,
-      strict: true,
-      deprecationErrors: true,
-  }
-});
-
-client.connect();
-// Send a ping to confirm a successful connection
-client.db("admin").command({ ping: 1 });
-console.log("Pinged your deployment. You successfully connected to MongoDB!");
-
-const db = client.db("amphi");
-const coll = db.collection("papers");
-
-const c = new Crawler({
-    maxConnections: 10,
-    userAgent: "amphibot",
-    callback: (error, res, done) => {
-        if (error) {
-            console.log(error);
-            done();
-        }
-        else {
-          const $ = res.$;
-          const appendix = $(".download-pdf").attr("href");
-          const pdfURL = `https://arxiv.org${appendix}.pdf`;
-          const path = `downloads${appendix}.pdf`;
-
-          downloadFile(pdfURL, path).then(res => {
-            mpdf.readPDF(path).then(async meta => {
-                const result = await coll.insertOne(meta);
-                console.log(`Inserted ${meta.title}`);
-
-                fs.unlinkSync(path);
-                done();
-            });
-          });
-        }
+async function connect(uri) {
+  const client = new MongoClient(uri,  {
+    serverApi: {
+        version: ServerApiVersion.v1,
+        strict: true,
+        deprecationErrors: true,
     }
+  });
+
+  await client.connect();
+
+  // Send a ping to confirm a successful connection
+  await client.db("admin").command({ ping: 1 });
+  console.log("Connected to DB.");
+
+  return client;
+}
+
+function pdfURLFromURL(url) {
+  if (!url.includes("abs")) { return null; }
+
+  const comps = url.split("/")
+  const id = comps.pop() || comps.pop(); // in case there is a trailing slash
+
+  return `https://arxiv.org/pdf/${id}.pdf`
+}
+
+const url = "https://arxiv.org/abs/2001.01653";
+const pdfURL = pdfURLFromURL(url);
+const path = "/Users/Laurin/Desktop/test.pdf";
+
+downloadFile(pdfURL, path).then(res => {
+  console.log("downloaded");
+  mpdf.readPDF(path).then(async meta => {
+      console.log(meta.text);
+
+      fs.unlinkSync(path);
+  });
 });
 
-c.queue("https://arxiv.org/abs/2001.01653");
 
-c.on("drain", async () => {
-  await client.close();
-});
+// const uri = "mongodb://amphi:amphi@localhost:27017";
+// const client = await connect(uri);
+// const db = client.db("amphi");
+// const coll = db.collection("papers");
+
+// const c = new Crawler({
+//     maxConnections: 10,
+//     userAgent: "amphibot",
+//     callback: (error, res, done) => {
+//         if (error) {
+//             console.log(error);
+//             done();
+//         }
+//         else {
+//           const $ = res.$;
+//           const appendix = $(".download-pdf").attr("href");
+//           const pdfURL = `https://arxiv.org${appendix}.pdf`;
+//           const path = `downloads${appendix}.pdf`;
+
+          // downloadFile(pdfURL, path).then(res => {
+          //   mpdf.readPDF(path).then(async meta => {
+          //       const result = await coll.insertOne(meta);
+          //       console.log(`Inserted ${meta.title}`);
+
+          //       fs.unlinkSync(path);
+          //       done();
+          //   });
+          // });
+//         }
+//     }
+// });
+
+// c.queue("https://arxiv.org/abs/2001.01653");
+
+// c.on("drain", async () => {
+//   await client.close();
+// });

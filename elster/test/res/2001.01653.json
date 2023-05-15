@@ -1,0 +1,31 @@
+{
+    "title": "A Fast Analytical Model of Fully Associative Caches",
+    "keywords": ["static analysis", "cache model", "performance tool"],
+    "ccs": ["Software and its engineering", "Software performance", "Compilers"],
+    "authors": [
+        {
+            "name": "Tobias Gysi",
+            "email": "tobias.gysi@inf.ethz.ch",
+            "affiliation": "ETH Zurich",
+            "location": "Switzerland"
+        },
+        {
+            "name": "Tobias Grosser",
+            "email": "tobias.grosser@inf.ethz.ch",
+            "affiliation": "ETH Zurich",
+            "location": "Switzerland"
+        },
+        {
+            "name": "Laurin Brandner",
+            "email": "laurinb@student.ethz.ch",
+            "affiliation": "ETH Zurich",
+            "location": "Switzerland"
+        },
+        {
+            "name": "Torsten Hoefler",
+            "email": "htor@inf.ethz.ch",
+            "affiliation": "ETH Zurich",
+            "location": "Switzerland"
+        }
+    ]
+}
