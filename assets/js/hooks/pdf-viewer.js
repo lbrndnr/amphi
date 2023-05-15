@@ -1,19 +1,34 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
+
 const PDFViewer = {
 	
 	mounted() {	
 		this.url = this.el.getAttribute("pdf-url");
 
-		pdfjsLib.getDocument(this.url).promise.then((pdf) => {
+		const loadPDF = async () => {
+			const pdf = await pdfjsLib.getDocument(this.url).promise;
+		
 			this.pdf = pdf;
 			this.viewers = Array(this.pdf.numPages);
 			this.initContainers();
 			for (let i = 0; i < Math.min(this.pdf.numPages, 3); i++) {
 				this.loadPage(i);
 			}
-		});
+			this.handleEvent("get_comment_rects", (data) => {
+				for(let i = 0; i < data.idx.length; ++i){
+					rects = reshape(data.rects[i], [data.rects[i].length/4, 4])
+					for(r of rects){
+						this.highlightRect(data.idx[i], r, "rgba(255, 255, 0, 0.5)");
+					}
+				}
+	
+			});
+			this.pushEvent("get_comment_rects");
+		};
+		
+		loadPDF();
 
 		const input = document.querySelector("#comment-input");
 		const button = document.querySelector("#comment-button");
@@ -44,15 +59,6 @@ const PDFViewer = {
 			}
 		}.bind(this));
 
-		this.handleEvent("get_comment_rects", (data) => {
-			console.log(data);
-			this.rects = data;
-			for(let i = 0; i < data.idx.length; ++i){
-				this.highlightRect(data.idx[i], data.rects[i], "rgba(255, 255, 0, 0.5)");
-			}
-
-		});
-		this.pushEvent("get_comment_rects");
 
 	},
 	highlightCurrentSelection(event) {
@@ -88,7 +94,7 @@ const PDFViewer = {
 		}
 
 		this.rects = pdfRects;
-		this.commentHeight = Math.round(y)-100;
+		this.commentHeight = Math.round(y)-250;
 		this.page_idx = idx;
 
 		return pdfRects;
@@ -174,6 +180,25 @@ const PDFViewer = {
 			lastRow.style.position =  'absolute';
 		}
 	}
+}
+
+
+function reshape(list, shape) {
+	// Check if the product of the new shape is equal to the length of the original list
+	if (list.length !== shape.reduce((acc, val) => acc * val)) {
+		throw new Error('Invalid shape');
+	}
+
+	const result = [];
+	let index = 0;
+
+	// Iterate through the new shape and slice the original list accordingly
+	for (let i = 0; i < shape[0]; i++) {
+		result.push(list.slice(index, index + shape[1]));
+		index += shape[1];
+	}
+
+	return result;
 }
 
 export default PDFViewer;
