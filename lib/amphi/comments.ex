@@ -2,7 +2,6 @@ defmodule Amphi.Comments do
   @moduledoc """
   The Comments context.
   """
-
   import Ecto.Query, warn: false
   alias Amphi.Repo
   alias Ecto.Changeset
@@ -23,7 +22,6 @@ defmodule Amphi.Comments do
     end
 
     Repo.all(query)
-
   end
 
   def get_comment!(id, assocs \\ []) do
