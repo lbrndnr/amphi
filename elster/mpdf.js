@@ -75,8 +75,8 @@ const readPDF = async (url) => {
       var bestMatch = null;
       var minDist = Number.MAX_SAFE_INTEGER;
       for (const match of matches) {
-        const matchDist = Math.abs(match.index - authorIdx);
-        if (matchDist < minDist) {
+        const matchDist = match.index - (authorIdx + author.length);
+        if (matchDist < minDist && matchDist > 0) {
           minDist = matchDist;
           bestMatch = match;
         }
