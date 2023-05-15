@@ -72,7 +72,7 @@ const PDFViewer = {
 		for (let i = 0; i < this.pdf.numPages; i++) {
 			const r = this.containers[i].getBoundingClientRect();
 			r.y += scrollTop;
-			if (r.x < selectionRects[0].left && selectionRects[0].left < (r.x + r.width) && r.y < y && y < (r.y + r.height)) {
+			if (r.y < y && y < (r.y + r.height)) {
 				idx = i;
 				break;
 			}
