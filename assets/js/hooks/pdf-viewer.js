@@ -6,60 +6,98 @@ const PDFViewer = {
 	
 	mounted() {	
 		this.url = this.el.getAttribute("pdf-url");
+		const extractC = this.el.getAttribute("extract-comment");
+		if(extractC){
+			const loadPDF = async () => {
+				const pdf = await pdfjsLib.getDocument(this.url).promise;
+				this.pdf = pdf;
+				this.viewers = Array(this.pdf.numPages);
 
-		const loadPDF = async () => {
-			const pdf = await pdfjsLib.getDocument(this.url).promise;
-		
-			this.pdf = pdf;
-			this.viewers = Array(this.pdf.numPages);
-			this.initContainers();
-			for (let i = 0; i < Math.min(this.pdf.numPages, 3); i++) {
-				this.loadPage(i);
-			}
-			this.handleEvent("get_comment_rects", (data) => {
-				for(let i = 0; i < data.idx.length; ++i){
-					rects = reshape(data.rects[i], [data.rects[i].length/4, 4])
-					for(r of rects){
-						this.highlightRect(data.idx[i], r, "rgba(255, 255, 0, 0.5)");
-					}
-				}
-	
-			});
-			this.pushEvent("get_comment_rects");
-		};
-		
-		loadPDF();
-
-		const input = document.querySelector("#comment-input");
-		const button = document.querySelector("#comment-button");
-		if (input && button) {
-			this.commentInput = input;
-			button.addEventListener("click", this.submitComment.bind(this));	
-		}
-
-		
-		this.el.addEventListener('keydown', function(event) {
-			if (event.key === "c" && event.metaKey) {
-				this.rects = this.highlightCurrentSelection.bind(this)();
-			
-				// Create a mousemove event listener
-				const handleMouseMove = (e) => {
-					this.mouseY = e.clientY + window.scrollY;
+				this.handleEvent("get_comment_rects", (data) => {
+					const rects = reshape(data.rects, [data.rects.length/4, 4]);
+					let minX = Number.MAX_SAFE_INTEGER;
+					let minY = Number.MAX_SAFE_INTEGER;
+					let maxX = Number.MIN_SAFE_INTEGER;
+					let maxY = Number.MIN_SAFE_INTEGER;
+					console.log(rects)
 					
-					const commentForm = document.querySelector('#comment-form');
-					commentForm.style.visibility = 'visible';
-					commentForm.style.top = this.mouseY - 100 + 'px';
+					for(rect of rects) {
+						if(rect[0] == 0){
+							continue;
+						}
+						if (rect[0] < minX) {
+						minX = rect[0];
+						}
+						if (rect[3] < minY) {
+						minY = rect[3];
+						}
+						if (rect[2] > maxX) {
+						maxX = rect[2];
+						}
+						if (rect[1] > maxY) {
+						maxY = rect[1];
+						}
+					};
+					this.loadRect([minX, maxY, maxX+30, minY], data.idx);
+				});
+				this.pushEvent("get_comment_rects", {comment_id: parseInt(this.el.getAttribute("comment-id"))});
+			};
+			loadPDF();
 
-					// Remove the mousemove listener once the form is displayed
-					document.removeEventListener('mousemove', handleMouseMove);
-				};
+
+		}else {
+			const loadPDF = async () => {
+				const pdf = await pdfjsLib.getDocument(this.url).promise;
 			
-				// Add the mousemove event listener to the document
-				document.addEventListener('mousemove', handleMouseMove);
+				this.pdf = pdf;
+				this.viewers = Array(this.pdf.numPages);
+				this.initContainers();
+				for (let i = 0; i < Math.min(this.pdf.numPages, 3); i++) {
+					this.loadPage(i);
+				}
+				this.handleEvent("get_comment_rects", (data) => {
+					for(let i = 0; i < data.idx.length; ++i){
+						rects = reshape(data.rects[i], [data.rects[i].length/4, 4])
+						for(r of rects){
+							this.highlightRect(data.idx[i], r, "rgba(255, 255, 0, 0.5)");
+						}
+					}
+		
+				});
+				this.pushEvent("get_comment_rects");
+			};
+			
+			loadPDF();
+
+			const input = document.querySelector("#comment-input");
+			const button = document.querySelector("#comment-button");
+			if (input && button) {
+				this.commentInput = input;
+				button.addEventListener("click", this.submitComment.bind(this));	
 			}
-		}.bind(this));
 
+			
+			this.el.addEventListener('keydown', function(event) {
+				if (event.key === "c" && event.metaKey) {
+					this.rects = this.highlightCurrentSelection.bind(this)();
+				
+					// Create a mousemove event listener
+					const handleMouseMove = (e) => {
+						this.mouseY = e.clientY + window.scrollY;
+						
+						const commentForm = document.querySelector('#comment-form');
+						commentForm.style.visibility = 'visible';
+						commentForm.style.top = this.mouseY - 100 + 'px';
 
+						// Remove the mousemove listener once the form is displayed
+						document.removeEventListener('mousemove', handleMouseMove);
+					};
+				
+					// Add the mousemove event listener to the document
+					document.addEventListener('mousemove', handleMouseMove);
+				}
+			}.bind(this));
+		}
 	},
 	highlightCurrentSelection(event) {
 		const selectionRects = window.getSelection().getRangeAt(0).getClientRects();
@@ -133,7 +171,38 @@ const PDFViewer = {
 			mainContainer.appendChild(elem);
 
 			this.containers[i] = elem;
-		}		
+		}				
+	},
+	async loadRect(rect, page_idx) {
+		// Get first page of PDF document
+		const page = await this.pdf.getPage(page_idx+1);
+		const viewport = page.getViewport({scale: window.devicePixelRatio});
+		rect = viewport.convertToViewportRectangle(rect);
+
+		// Create canvas to render extracted rectangle
+		const canvas = document.createElement('canvas');
+		canvas.width = rect[2] - rect[0];
+		canvas.height = rect[3] - rect[1];
+		const context = canvas.getContext('2d');
+
+		// Render extracted rectangle to canvas
+		const renderContext = {
+			canvasContext: context,
+			viewport: viewport,
+			transform: [1, 0, 0, 1, -rect[0], -rect[1]],
+			intent: 'print',
+		};
+		await page.render(renderContext).promise;
+
+		// Get data URL for the extracted rectangle
+		const dataUrl = canvas.toDataURL();
+
+		// Display the extracted rectangle in an image element
+		const img = document.getElementById('image');
+		img.src = dataUrl;
+		img.style.display = 'inline-block';
+
+
 	},
 	loadPage(idx) {
 		this.pdf.getPage(idx+1).then((page) => {

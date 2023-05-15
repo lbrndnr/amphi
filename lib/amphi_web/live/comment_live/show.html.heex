@@ -1,0 +1,9 @@
+<.header>
+    <%= @post.paper.title %>
+
+    <%= if @post.paper.pdf_url do %>
+        <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} comment-id={@comment.id} extract-comment='yes' class="mx-auto" phx-hook="PDFViewer">
+            <img id="image" alt="Extracted rectangle" />
+        </div>
+    <% end %>
+</.header>
