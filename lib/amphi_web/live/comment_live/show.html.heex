@@ -1,9 +1,33 @@
 <.header>
+    <.back navigate={~p"/posts/#{@post.id}"}>Back to post</.back>
     <%= @post.paper.title %>
-
-    <%= if @post.paper.pdf_url do %>
-        <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} comment-id={@comment.id} extract-comment='yes' class="mx-auto" phx-hook="PDFViewer">
-            <img id="image" alt="Extracted rectangle" />
-        </div>
-    <% end %>
 </.header>
+
+<%= if @post.paper.pdf_url do %>
+    <div id="pdf-viewer" pdf-url={@post.paper.pdf_url} comment-id={@comment.id} extract-comment='yes' class="mx-auto" phx-hook="PDFViewer">
+        <img id="image" alt="Image missing" />
+    </div>
+<% end %>
+
+<%= @comment.text %>
+
+<.table id="comment-stream" rows={@streams.comments}>
+    <:col :let={{_id, comment}} label="User">
+        <%= comment.user.name %>
+    </:col>
+    <:col :let={{_id, comment}} label="Text">
+        <%= comment.text %>
+    </:col>
+    <:col :let={{_id, comment}} label="Likes">
+        <%= comment.likes %>
+    </:col>
+
+</.table>
+<div>
+    <%= if @current_user do %>
+        <.form phx-submit="comment_button">
+            <.input name="text" value="" id="comment-input" type="textarea" class="block p-2.5 w-full text-sm rounded-lg border border-gray-300" phx-value="text" />
+            <.button class="inline-flex items-center px-5 py-2.5 text-sm font-medium text-center text-white bg-blue-700 rounded-lg focus:ring-4 focus:ring-blue-200 dark:focus:ring-blue-900 hover:bg-blue-800">Comment</.button>
+        </.form>
+    <% end %>
+</div>

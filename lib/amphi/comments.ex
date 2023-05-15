@@ -11,7 +11,22 @@ defmodule Amphi.Comments do
 
   def list_comments(post, assocs \\ []) do
     query = from c in Comment,
-      where: c.post_id == ^post.id,
+      where: c.post_id == ^post.id and is_nil(c.response_id),
+      left_join: l in assoc(c, :liked_by_users),
+      group_by: c.id,
+      select: %{c | likes: count(l)}
+
+    query = case assocs do
+      [] -> query
+      assocs -> preload(query, ^assocs)
+    end
+
+    Repo.all(query)
+  end
+
+  def list_comments_to_comment(comment, assocs \\ []) do
+    query = from c in Comment,
+      where: c.response_id == ^comment.id,
       left_join: l in assoc(c, :liked_by_users),
       group_by: c.id,
       select: %{c | likes: count(l)}

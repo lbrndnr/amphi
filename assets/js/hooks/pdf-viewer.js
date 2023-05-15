@@ -3,7 +3,6 @@ import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
 
 const PDFViewer = {
-	
 	mounted() {	
 		this.url = this.el.getAttribute("pdf-url");
 		const extractC = this.el.getAttribute("extract-comment");
