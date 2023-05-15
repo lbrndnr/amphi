@@ -44,11 +44,11 @@ const PDFViewer = {
 			
 				// Create a mousemove event listener
 				const handleMouseMove = (e) => {
-					const mouseY = e.clientY + window.scrollY;
+					this.mouseY = e.clientY + window.scrollY;
 					
 					const commentForm = document.querySelector('#comment-form');
 					commentForm.style.visibility = 'visible';
-					commentForm.style.top = mouseY - 100 + 'px';
+					commentForm.style.top = this.mouseY - 100 + 'px';
 
 					// Remove the mousemove listener once the form is displayed
 					document.removeEventListener('mousemove', handleMouseMove);
@@ -94,7 +94,6 @@ const PDFViewer = {
 		}
 
 		this.rects = pdfRects;
-		this.commentHeight = Math.round(y)-250;
 		this.page_idx = idx;
 
 		return pdfRects;
@@ -163,12 +162,12 @@ const PDFViewer = {
 	},
 	submitComment(event) {
 		window.getSelection().removeAllRanges();
-		
+		const commentHeight = this.mouseY - 250;
 		if(this.rects){
 			const payload = {
 				"text": this.commentInput.value,
 				"rects": this.rects.flat().map((num) => Math.round(num)),
-				"comment_height": this.commentHeight,
+				"comment_height": commentHeight,
 				"page_idx": this.page_idx
 			};
 			this.pushEvent("comment", {"comment": payload});
@@ -176,9 +175,10 @@ const PDFViewer = {
 			const table = document.querySelector('#comment-stream');
 			const rows = table.querySelectorAll('tr');
 			const lastRow = rows[rows.length - 1];
-			lastRow.style.top =  this.commentHeight + 'px';
+			lastRow.style.top =  commentHeight + 'px';
 			lastRow.style.position =  'absolute';
 		}
+		window.location.replace(window.location.href);
 	}
 }
 
