@@ -18,7 +18,6 @@ const PDFViewer = {
 					let minY = Number.MAX_SAFE_INTEGER;
 					let maxX = Number.MIN_SAFE_INTEGER;
 					let maxY = Number.MIN_SAFE_INTEGER;
-					console.log(rects)
 					
 					for(rect of rects) {
 						if(rect[0] == 0){
@@ -37,7 +36,7 @@ const PDFViewer = {
 						maxY = rect[1];
 						}
 					};
-					this.loadRect([minX, maxY, maxX+30, minY], data.idx);
+					this.loadRectHighlight([minX-20, maxY+20, maxX+20, minY-20], data.idx, rects);
 				});
 				this.pushEvent("get_comment_rects", {comment_id: parseInt(this.el.getAttribute("comment-id"))});
 			};
@@ -172,37 +171,46 @@ const PDFViewer = {
 			this.containers[i] = elem;
 		}				
 	},
-	async loadRect(rect, page_idx) {
+	async loadRectHighlight(rect, page_idx, highlightRects) {
 		// Get first page of PDF document
 		const page = await this.pdf.getPage(page_idx+1);
 		const viewport = page.getViewport({scale: window.devicePixelRatio});
-		rect = viewport.convertToViewportRectangle(rect);
 
-		// Create canvas to render extracted rectangle
-		const canvas = document.createElement('canvas');
-		canvas.width = rect[2] - rect[0];
-		canvas.height = rect[3] - rect[1];
-		const context = canvas.getContext('2d');
+		// Convert highlightRect to viewport coordinates
+		const highlightViewportRect = viewport.convertToViewportRectangle(rect);
 
-		// Render extracted rectangle to canvas
+		// Create canvas to render highlighted region of PDF page
+		const highlightCanvas = document.createElement('canvas');
+		highlightCanvas.width = highlightViewportRect[2] - highlightViewportRect[0];
+		highlightCanvas.height = highlightViewportRect[3] - highlightViewportRect[1];
+		const highlightContext = highlightCanvas.getContext('2d');
+		highlightContext.globalAlpha = 0.5;
+		highlightContext.fillStyle = 'yellow';
+		for(rect of highlightRects){
+			if(rect[0] == 0) {
+				continue;
+			}
+			const r = viewport.convertToViewportRectangle(rect);
+			highlightContext.fillRect(r[0]-highlightViewportRect[0], r[1]-highlightViewportRect[1], r[2]-r[0], r[3]-r[1]);
+		}
+		
+		// Render PDF page to canvas
 		const renderContext = {
-			canvasContext: context,
+			canvasContext: highlightContext,
 			viewport: viewport,
-			transform: [1, 0, 0, 1, -rect[0], -rect[1]],
+			transform: [1, 0, 0, 1, -highlightViewportRect[0], -highlightViewportRect[1]],
 			intent: 'print',
 		};
 		await page.render(renderContext).promise;
 
-		// Get data URL for the extracted rectangle
-		const dataUrl = canvas.toDataURL();
+		// // Render extracted rectangle to canvas
+		const dataUrl = highlightCanvas.toDataURL();
 
 		// Display the extracted rectangle in an image element
 		const img = document.getElementById('image');
 		img.src = dataUrl;
 		img.style.display = 'inline-block';
-
-
-	},
+	}, 
 	loadPage(idx) {
 		this.pdf.getPage(idx+1).then((page) => {
 			const eventBus = new pdfjsViewer.EventBus();
