@@ -3,9 +3,11 @@ import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
 
 const PDFViewer = {
-	mounted() {	
+	async mounted() {	
 		this.url = this.el.getAttribute("pdf-url");
 		const extractC = this.el.getAttribute("extract-comment");
+		const pdf = await pdfjsLib.getDocument(this.url).promise;
+		this.pdf = pdf;
 		this.handleEvent("get_comment_rects_comment", (data) => {
 			const rects = reshape(data.rects, [data.rects.length/4, 4]);
 			let minX = Number.MAX_SAFE_INTEGER;
@@ -86,8 +88,6 @@ const PDFViewer = {
 
 	loadImageSection(){
 		const loadPDF = async () => {
-			const pdf = await pdfjsLib.getDocument(this.url).promise;
-			this.pdf = pdf;
 			this.viewers = Array(this.pdf.numPages);
 			this.pushEvent("get_comment_rects_comment", {comment_id: parseInt(this.el.getAttribute("comment-id"))});
 		};
@@ -96,9 +96,6 @@ const PDFViewer = {
 
 	loadPDFSection(){
 		const loadPDF = async () => {
-			const pdf = await pdfjsLib.getDocument(this.url).promise;
-		
-			this.pdf = pdf;
 			this.viewers = Array(this.pdf.numPages);
 			this.initContainers();
 			for (let i = 0; i < Math.min(this.pdf.numPages, 3); i++) {
