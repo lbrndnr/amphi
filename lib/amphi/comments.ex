@@ -9,7 +9,7 @@ defmodule Amphi.Comments do
 
   alias Amphi.Models.Comment
 
-  def list_comments(post, assocs \\ []) do
+  def list_comments_post(post, assocs \\ []) do
     query = from c in Comment,
       where: c.post_id == ^post.id and is_nil(c.response_id),
       left_join: l in assoc(c, :liked_by_users),
@@ -67,6 +67,12 @@ defmodule Amphi.Comments do
   end
 
   def delete_comment(%Comment{} = comment) do
+    query = from c in Comment,
+      where: c.response_id == ^comment.id
+    comments = Repo.all(query)
+    Enum.each(comments, fn c ->
+      Repo.delete(c)
+    end)
     Repo.delete(comment)
   end
 

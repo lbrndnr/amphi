@@ -12,7 +12,7 @@ defmodule AmphiWeb.PostLive.Show do
     |> to_form()
 
     post = Posts.get_post!(id, [:paper, :user])
-    comments = Comments.list_comments(post, [:user])
+    comments = Comments.list_comments_post(post, [:user])
 
     {:noreply, socket
     |> assign(:page_title, post.paper.title)
@@ -25,7 +25,7 @@ defmodule AmphiWeb.PostLive.Show do
   @spec handle_event(<<_::48, _::_*8>>, any, map) :: {:noreply, map}
   def handle_event("get_comment_rects", _, socket) do
     post = socket.assigns.post
-    comments = Comments.list_comments(post)
+    comments = Comments.list_comments_post(post)
     rects = Enum.map(comments, &(&1.rects))
     idx = Enum.map(comments, &(&1.page_idx))
     {:noreply, push_event(socket, "get_comment_rects", %{rects: rects, idx: idx})}
