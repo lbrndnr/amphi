@@ -267,7 +267,6 @@ const PDFViewer = {
 			lastRow.style.top =  commentHeight + 'px';
 			lastRow.style.position =  'absolute';
 		}
-		window.location.replace(window.location.href);
 	}
 }
 
