@@ -21,9 +21,9 @@ defmodule AmphiWeb.CommentLive.Show do
 
   @impl true
   @spec handle_event(<<_::48, _::_*8>>, any, map) :: {:noreply, map}
-  def handle_event("get_comment_rects", %{"comment_id" => id}, socket) do
+  def handle_event("get_comment_rects_comment", %{"comment_id" => id}, socket) do
     comment = Comments.get_comment!(id)
-    {:noreply, push_event(socket, "get_comment_rects", %{rects: comment.rects, idx: comment.page_idx})}
+    {:noreply, push_event(socket, "get_comment_rects_comment", %{rects: comment.rects, idx: comment.page_idx})}
   end
 
   @impl true
@@ -37,9 +37,10 @@ defmodule AmphiWeb.CommentLive.Show do
 
     case Comments.create_comment(params) do
       {:ok, comment} ->
-        {:noreply, socket
-        |> put_flash(:info, "Comment created successfully")
-        |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
+        {:noreply,
+          push_event(socket, "loadImage", %{})
+          |> put_flash(:info, "Comment created successfully")
+          |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket
         |> put_flash(:error, "An error occurred: #{changeset.errors}")}
