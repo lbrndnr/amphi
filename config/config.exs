@@ -8,9 +8,15 @@
 import Config
 
 config :amphi, Amphi.Repo,
-  database: "amphi_repo",
+  database: "amphi",
   username: "user",
   password: "pass",
+  hostname: "localhost"
+
+config :amphi, Amphi.MongoDBRepo,
+  database: "amphi",
+  username: "amphi",
+  password: "amphi",
   hostname: "localhost"
 
 config :crawly,
@@ -26,7 +32,7 @@ config :crawly,
   ]
 
 config :amphi,
-  ecto_repos: [Amphi.Repo]
+  ecto_repos: [Amphi.Repo, Amphi.MongoDBRepo]
 
 # Configures the endpoint
 config :amphi, AmphiWeb.Endpoint,

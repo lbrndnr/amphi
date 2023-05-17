@@ -6,6 +6,12 @@
           Amphi
       </a>
     </div>
+
+    <.live_component
+    module={AmphiWeb.SearchComponent}
+    id="search"
+    />
+
     <div class="flex items-center gap-4">
       <%= if @current_user do %>
         <a href={~p"/posts/new"}
