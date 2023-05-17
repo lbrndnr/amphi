@@ -13,8 +13,4 @@ defmodule AmphiWeb.InitAssigns do
     |> assign(:current_user, user)}
   end
 
-  # def on_mount(:user, params, session, socket) do
-  #   # code
-  # end
-
 end

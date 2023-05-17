@@ -6,7 +6,8 @@ defmodule AmphiWeb.UserLive.New do
 
   @impl true
   def mount(_params, _session, socket) do
-    {:ok, socket}
+    {:ok, socket
+    |> assign(trigger_submit: false)}
   end
 
   @impl true
@@ -40,7 +41,7 @@ defmodule AmphiWeb.UserLive.New do
       {:ok, user} ->
           {:noreply, socket
           |> put_flash(:info, "#{user.name} created!")
-          |> redirect(to: ~p"/")}
+          |> assign(trigger_submit: true)}
       {:error, %Ecto.Changeset{} = changeset} ->
           {:noreply, socket
           |> put_flash(:error, changeset.errors)}
