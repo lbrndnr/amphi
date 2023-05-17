@@ -31,6 +31,13 @@ defmodule AmphiWeb.SearchComponent do
     |> assign(:results, [])}
   end
 
+  @impl true
+  def handle_event("prompt", params, socket) do
+    require Logger
+    Logger.info "SEARCH BAR"
+    Logger.info params
+    results = Mongo.find(Amphi.MongoDBRepo.pool(), "papers", %{_id: %{"$in" =>"some_ids"}})
+
 
     {:noreply, socket}
   end

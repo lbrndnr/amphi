@@ -12,6 +12,8 @@ defmodule Amphi.Application do
       AmphiWeb.Telemetry,
       # Start the Ecto repository
       Amphi.Repo,
+      # Start the Ecto repository
+      Amphi.MongoDBRepo,
       # Start the PubSub system
       {Phoenix.PubSub, name: Amphi.PubSub},
       # Start Finch
