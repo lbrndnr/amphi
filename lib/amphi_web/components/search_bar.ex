@@ -1,4 +1,4 @@
-defmodule AmphiWeb.SearchComponent do
+defmodule AmphiWeb.Component.SearchBar do
   use AmphiWeb, :live_component
 
   alias Amphi.Posts

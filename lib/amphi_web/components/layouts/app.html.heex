@@ -7,10 +7,12 @@
       </a>
     </div>
 
-    <.live_component
-    module={AmphiWeb.SearchComponent}
-    id="search"
-    />
+    <%= if assigns[:search_enabled] == nil || @search_enabled do %>
+      <.live_component
+      module={AmphiWeb.Component.SearchBar}
+      id="search"
+      />
+    <% end %>
 
     <div class="flex items-center gap-4">
       <%= if @current_user do %>
