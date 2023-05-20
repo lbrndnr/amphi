@@ -3,12 +3,11 @@ version: '3.8'
 services:
     mongo:
         image: mongo:5.0.6
-        container_name: mongo
+        container_name: amphi_mongo
         restart: always
         environment:
             MONGO_INITDB_ROOT_USERNAME: root
             MONGO_INITDB_ROOT_PASSWORD: admin
-            MONGO_INITDB_DATABASE: amphi
         ports:
             - 27017:27017
         volumes:
@@ -17,7 +16,7 @@ services:
 
     postgres:
         image: postgres
-        container_name: postgres
+        container_name: amphi_postgres
         restart: always
         environment:
             POSTGRES_PASSWORD: docker
@@ -28,7 +27,7 @@ services:
 
     splash:
         image: scrapinghub/splash
-        container_name: splash
+        container_name: amphi_splash
         restart: always
         ports:
             - 8050:8050

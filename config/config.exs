@@ -17,7 +17,8 @@ config :amphi, Amphi.MongoDBRepo,
   database: "amphi",
   username: "amphi",
   password: "amphi",
-  hostname: "localhost"
+  hostname: "localhost",
+  auth_source: "amphi"
 
 config :crawly,
   closespider_timeout: 10,

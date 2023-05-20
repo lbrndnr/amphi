@@ -30,6 +30,7 @@ defmodule Amphi.Models.User do
         |> cast(attrs, [:password])
         |> validate_format(:email, ~r/@/)
         |> unique_constraint(:email)
+        |> unique_constraint(:username)
         |> validate_required([:password])
         |> validate_length(:password, min: 8, max: 100)
         |> put_pass_hash()
