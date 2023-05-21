@@ -41,6 +41,7 @@ const readPDF = async (url) => {
 
   const res = {
     title: null,
+    url: url,
     keywords: null,
     authors: null,
     text: null,

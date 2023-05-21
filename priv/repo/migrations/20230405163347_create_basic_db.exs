@@ -1,20 +1,28 @@
 defmodule Amphi.Repo.Migrations.CreateBasicDb do
   use Ecto.Migration
 
+  # def down do
+  #   execute "DROP EXTENSION fuzzystrmatch"
+  #   execute "DROP EXTENSION pg_trgm"
+  # end
+
   def change do
+    execute "CREATE EXTENSION pg_trgm"
+    execute "CREATE EXTENSION fuzzystrmatch"
+
     create table(:users) do
       add :name, :string
       add :email, :string, null: false
       add :username, :string, null: false
       add :password_hash, :string
 
-      timestamps()
+      timestamps(default: fragment("NOW()"))
     end
 
     create table(:posts) do
       add :user_id, references(:users, on_delete: :nothing), null: false
 
-      timestamps()
+      timestamps(default: fragment("NOW()"))
     end
 
     create table(:posts_likes, primary_key: false) do
@@ -25,11 +33,12 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create table(:papers) do
       add :title, :string
       add :abstract, :text
+      add :text, :text
       add :url, :string, null: false
       add :pdf_url, :string
       add :post_id, references(:posts)
 
-      timestamps()
+      timestamps(default: fragment("NOW()"))
     end
 
     create table(:authors) do
@@ -38,7 +47,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :affiliation, :string
       add :user_id, references(:users)
 
-      timestamps()
+      timestamps(default: fragment("NOW()"))
     end
 
     create table(:papers_authors, primary_key: false) do
@@ -54,7 +63,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :text, :text
       add :rects, {:array, :float}
 
-      timestamps()
+      timestamps(default: fragment("NOW()"))
     end
 
     create table(:comments_likes, primary_key: false) do

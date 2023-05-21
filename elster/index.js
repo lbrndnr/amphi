@@ -4,7 +4,15 @@ const axios = require("axios");
 const fs = require("fs");
 const stream = require("stream");
 const util = require("util");
-const { MongoClient, ServerApiVersion } = require("mongodb");
+const Pool = require('pg').Pool
+
+var pool = new Pool({
+  database: "amphi_dev",
+  user: "postgres",
+  password: "docker",
+  host: "localhost",
+  port: 5432,
+});
 
 const finished = util.promisify(stream.finished);
 async function downloadFile(fileUrl, outputLocationPath) {
@@ -20,24 +28,6 @@ async function downloadFile(fileUrl, outputLocationPath) {
   });
 }
 
-async function connect(uri) {
-  const client = new MongoClient(uri,  {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
-  });
-
-  await client.connect();
-
-  // Send a ping to confirm a successful connection
-  await client.db("amphi").command({ ping: 1 });
-  console.log("Connected to DB.");
-
-  return client;
-}
-
 function pdfURLFromURL(url) {
   if (!url.includes("abs")) { return null; }
 
@@ -47,25 +37,18 @@ function pdfURLFromURL(url) {
   return `https://arxiv.org/pdf/${id}.pdf`
 }
 
-// const url = "https://arxiv.org/abs/2001.01653";
-// const pdfURL = pdfURLFromURL(url);
-// const path = "/Users/Laurin/Desktop/test.pdf";
+async function paperExists(title) {
+  const res = await pool.query("select id from papers where p.title like $1", [title]);
+  return res.rowCount > 0;
+}
 
-// downloadFile(pdfURL, path).then(res => {
-//   console.log("downloaded");
-//   mpdf.readPDF(path).then(async meta => {
-//       console.log(meta.text);
-
-//       fs.unlinkSync(path);
-//   });
-// });
+async function insert(meta) {
+  const pdfURL = pdfURLFromURL(meta.url);
+  await pool.query("insert into papers (title, url, pdf_url, abstract, text) values ($1, $2, $3, $4, $5) returning *", [meta.title, meta.url, pdfURL, meta.abstract, meta.text]);
+  console.log(`Successfully inserted ${meta.title}.`);
+}
 
 async function main() {
-  const uri = "mongodb://amphi:amphi@localhost:27017?authSource=amphi";
-  const client = await connect(uri);
-  const db = client.db("amphi");
-  const coll = db.collection("papers");
-
   const c = new Crawler({
       maxConnections: 10,
       userAgent: "amphibot",
@@ -82,9 +65,7 @@ async function main() {
 
             downloadFile(pdfURL, path).then(res => {
               mpdf.readPDF(path).then(async meta => {
-                  const result = await coll.insertOne(meta);
-                  console.log(`Inserted ${meta.title}`);
-
+                  await insert(meta);
                   fs.unlinkSync(path);
                   done();
               });
@@ -96,7 +77,7 @@ async function main() {
   c.queue("https://arxiv.org/abs/2001.01653");
 
   c.on("drain", async () => {
-    await client.close();
+    await pool.end();
   });
 }
 

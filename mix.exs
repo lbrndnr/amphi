@@ -52,8 +52,7 @@ defmodule Amphi.MixProject do
       {:httpoison, "~> 1.7.0"},
       {:floki, "~> 0.34.2"},
       {:pbkdf2_elixir, "~> 1.0"},
-      {:crawly, "~> 0.14.0"},
-      {:mongodb_ecto, "~> 1.0.0"}
+      {:crawly, "~> 0.14.0"}
     ]
   end
 
@@ -66,9 +65,9 @@ defmodule Amphi.MixProject do
   defp aliases do
     [
       setup: ["deps.get", "ecto.setup", "assets.setup", "assets.build"],
-      "ecto.setup": ["ecto.create", "ecto.migrate -r Amphi.Repo", "run priv/repo/seeds.exs"],
+      "ecto.setup": ["ecto.create", "ecto.migrate", "run priv/repo/seeds.exs"],
       "ecto.reset": ["ecto.drop", "ecto.setup"],
-      test: ["ecto.create --quiet", "ecto.migrate -r Amphi.Repo --quiet", "test"],
+      test: ["ecto.create --quiet", "ecto.migrate --quiet", "test"],
       "assets.setup": ["tailwind.install --if-missing", "esbuild.install --if-missing"],
       "assets.build": ["cmd npm install --prefix assets", "tailwind default", "esbuild default", "cmd cp assets/node_modules/pdfjs-dist/web/pdf_viewer.css priv/static/assets/pdf_viewer.css"],
       "assets.deploy": ["cmd npm install --prefix assets", "tailwind default --minify", "esbuild default --minify", "cmd cp assets/node_modules/pdfjs-dist/web/pdf_viewer.css priv/static/assets/pdf_viewer.css", "phx.digest"]

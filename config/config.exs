@@ -13,13 +13,6 @@ config :amphi, Amphi.Repo,
   password: "pass",
   hostname: "localhost"
 
-config :amphi, Amphi.MongoDBRepo,
-  database: "amphi",
-  username: "amphi",
-  password: "amphi",
-  hostname: "localhost",
-  auth_source: "amphi"
-
 config :crawly,
   closespider_timeout: 10,
   concurrent_requests_per_domain: 8,
@@ -33,7 +26,7 @@ config :crawly,
   ]
 
 config :amphi,
-  ecto_repos: [Amphi.Repo, Amphi.MongoDBRepo]
+  ecto_repos: [Amphi.Repo]
 
 # Configures the endpoint
 config :amphi, AmphiWeb.Endpoint,

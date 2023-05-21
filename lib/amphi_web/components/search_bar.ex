@@ -1,11 +1,7 @@
 defmodule AmphiWeb.Component.SearchBar do
   use AmphiWeb, :live_component
 
-  alias Amphi.MongoDBRepo
-  alias Amphi.Posts
   alias Amphi.Papers
-  import Ecto.Query
-  import Mongo.Ecto.Helpers
 
   @impl true
   def render(assigns) do
@@ -36,32 +32,14 @@ defmodule AmphiWeb.Component.SearchBar do
 
   @impl true
   def handle_event("prompt", %{"value" => text}, socket) do
-    results = case String.length(text) do
-      0 -> []
-      _ ->
-        query = from p in MPaper,
-          where: fragment(title: ["$regex": ^text, "$options": "i"]) or fragment(text: ["$regex": ^text, "$options": "i"]),
-          select: p
-        results = MongoDBRepo.all(query)
-
-        Enum.map(results, fn r ->
-          %{title: r.title, context: r.text}
-        end)
-    end
+    results = Papers.query_paper(text)
+    |> Enum.map(fn r ->
+      %{title: r.title, context: r.text}
+    end)
 
     {:noreply, socket
     |> assign(:results, results)}
   end
 
   defp notify_parent(msg), do: send(self(), {__MODULE__, msg})
-end
-
-defmodule MPaper do
-  use Ecto.Schema
-
-  @primary_key {:id, :binary_id, autogenerate: true}
-  schema "papers" do
-    field :title
-    field :text
-  end
 end

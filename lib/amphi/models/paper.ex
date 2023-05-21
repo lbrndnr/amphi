@@ -4,9 +4,10 @@ defmodule Amphi.Models.Paper do
 
     schema "papers" do
         field :title, :string
+        field :abstract, :string
+        field :text, :string
         field :url, :string
         field :pdf_url, :string
-        field :abstract, :string
         many_to_many :authors, Amphi.Models.Author, join_through: "papers_authors"
         belongs_to :post, Amphi.Models.Post
 

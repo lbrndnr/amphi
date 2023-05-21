@@ -1,19 +1,6 @@
 version: '3.8'
 
 services:
-    mongo:
-        image: mongo:5.0.6
-        container_name: amphi_mongo
-        restart: always
-        environment:
-            MONGO_INITDB_ROOT_USERNAME: root
-            MONGO_INITDB_ROOT_PASSWORD: admin
-        ports:
-            - 27017:27017
-        volumes:
-            - $HOME/Documents/Docker/mongodb:/data/db
-            - ./docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
     postgres:
         image: postgres
         container_name: amphi_postgres
