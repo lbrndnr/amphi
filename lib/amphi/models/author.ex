@@ -2,7 +2,6 @@ defmodule Amphi.Models.Author do
     use Ecto.Schema
     import Ecto.Changeset
 
-
     schema "authors" do
         field :name, :string
         field :email, :string

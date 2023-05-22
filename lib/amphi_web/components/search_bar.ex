@@ -2,13 +2,23 @@ defmodule AmphiWeb.Component.SearchBar do
   use AmphiWeb, :live_component
 
   alias Amphi.Papers
+  import Ecto.Changeset
 
   @impl true
   def render(assigns) do
     ~H"""
     <div class="w-2/5">
       <div class="relative">
-        <input type="search" phx-keyup="prompt" phx-debounce phx-target={@myself} class="w-full rounded-lg border border-gray-200" autocomplete="off" placeholder="Search"/>
+        <.form
+          for={@form}
+          as="query"
+          id="search-form"
+          phx-target={@myself}
+          phx-change="prompt"
+          phx-debounce
+        >
+          <.input field={@form[:query]} type="search" autocomplete="off" placeholder="Search"/>
+        </.form>
 
         <!-- search result -->
         <%= for item <- @results do %>
@@ -25,14 +35,16 @@ defmodule AmphiWeb.Component.SearchBar do
   end
 
   @impl true
-  def update(assigns, socket) do
+  def update(_assigns, socket) do
     {:ok, socket
+    |> assign(:form, %{} |> to_form())
     |> assign(:results, [])}
   end
 
   @impl true
-  def handle_event("prompt", %{"value" => text}, socket) do
-    results = Papers.query_paper(text)
+  def handle_event("prompt", %{"query" => query}, socket) do
+    results = query
+    |> Papers.query_paper()
     |> Enum.map(fn r ->
       %{title: r.title, context: r.text}
     end)
