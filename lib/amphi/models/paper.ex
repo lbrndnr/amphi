@@ -8,7 +8,10 @@ defmodule Amphi.Models.Paper do
         field :text, :string
         field :url, :string
         field :pdf_url, :string
-        many_to_many :authors, Amphi.Models.Author, join_through: "papers_authors"
+        field :keywords, {:array, :string}
+        many_to_many :authors, Amphi.Models.Author, join_through: "paper_authors"
+        many_to_many :references, Amphi.Models.Paper, join_through: "paper_references"
+        many_to_many :citations, Amphi.Models.Paper, join_through: "paper_references"
         belongs_to :post, Amphi.Models.Post
 
         timestamps()

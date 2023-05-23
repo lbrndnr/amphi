@@ -25,20 +25,26 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps(default: fragment("NOW()"))
     end
 
-    create table(:posts_likes, primary_key: false) do
+    create table(:post_likes, primary_key: false) do
       add :user_id, references(:users, on_delete: :delete_all), primary_key: true
       add :post_id, references(:posts, on_delete: :delete_all), primary_key: true
     end
 
     create table(:papers) do
-      add :title, :string
+      add :title, :string, null: false
       add :abstract, :text
       add :text, :text
-      add :url, :string, null: false
+      add :url, :string
       add :pdf_url, :string
+      add :keywords, {:array, :string}
       add :post_id, references(:posts)
 
       timestamps(default: fragment("NOW()"))
+    end
+
+    create table(:paper_references, primary_key: false) do
+      add :reference_id, references(:papers, on_delete: :delete_all), primary_key: true
+      add :citation_id, references(:papers, on_delete: :delete_all), primary_key: true
     end
 
     create table(:authors) do
@@ -50,7 +56,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps(default: fragment("NOW()"))
     end
 
-    create table(:papers_authors, primary_key: false) do
+    create table(:paper_authors, primary_key: false) do
       add :paper_id, references(:papers, on_delete: :delete_all), primary_key: true
       add :author_id, references(:authors, on_delete: :delete_all), primary_key: true
     end
@@ -66,7 +72,7 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps(default: fragment("NOW()"))
     end
 
-    create table(:comments_likes, primary_key: false) do
+    create table(:comment_likes, primary_key: false) do
       add :user_id, references(:users, on_delete: :delete_all), primary_key: true
       add :comment_id, references(:comments, on_delete: :delete_all), primary_key: true
     end
@@ -76,10 +82,14 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create index(:comments, [:user_id])
     create index(:posts, [:user_id])
     create unique_index(:papers, [:url])
+    create unique_index(:papers, [:pdf_url])
     create unique_index(:papers, [:post_id])
-    create unique_index(:users, [:username, :email])
-    create unique_index(:papers_authors, [:paper_id, :author_id])
-    create unique_index(:posts_likes, [:user_id, :post_id])
-    create unique_index(:comments_likes, [:user_id, :comment_id])
+    create unique_index(:users, [:username])
+    create unique_index(:users, [:email])
+    create unique_index(:authors, [:email])
+    create unique_index(:paper_authors, [:paper_id, :author_id])
+    create unique_index(:paper_references, [:reference_id, :citation_id])
+    create unique_index(:post_likes, [:user_id, :post_id])
+    create unique_index(:comment_likes, [:user_id, :comment_id])
   end
 end
