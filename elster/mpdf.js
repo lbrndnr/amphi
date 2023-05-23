@@ -1,4 +1,3 @@
-const fs = require("fs");
 const pdfjs = require("pdfjs-dist/legacy/build/pdf.js");
 
 const getText = async (doc) => {
@@ -13,7 +12,8 @@ const getText = async (doc) => {
 
   return text
     .replace(/\s+/g, " ") // make all whitespace just one character at most
-    .replace(/.(-\s)./g, ""); // remove "- " 
+    .replace(/.(-\s)./g, "") // remove "- " 
+    .replaceAll("\u0000", ""); 
 }
 
 const getCitations = (text) => {

@@ -9,17 +9,6 @@ const knex = require('knex')({
   }
 });
 
-function clean(obj) {
-  for (const key of Object.keys(obj)) {
-    const val = obj[key];
-    if (val && val instanceof String) {
-      obj.key = val.replaceAll("s/\x00//g", "");
-    }
-  }
-
-  return obj;
-}
-
 async function paperExists(url) {
   const res = await knex
     .select("id")
@@ -31,27 +20,14 @@ async function paperExists(url) {
 }
 
 async function insertPaper(paper) {
-  // var row = {};
-  // const columnInfo = await knex("papers").columnInfo()
-  // const columns = Object.keys(columnInfo);
-  // Object.keys(paper)
-  //   .filter(k => columns.includes(k))
-  //   .forEach(key => {
-  //     if (paper[key]) {
-  //       row[key] = paper[key];
-  //     }
-  //   });
-
-  console.log(paper.title, paper.url);
-
   const row = clean(paper);
   const res = await knex
     .insert({
-      title: row.title.replaceAll("s/\x00//g", ""),
-      // abstract: row.abstract,
-      // text: row.text.replaceAll("s/\x00//g", ""),
+      title: row.title,
+      abstract: row.abstract,
+      text: row.text,
       url: row.url,
-      // pdf_url: row.pdfURL
+      pdf_url: row.pdfURL
     })
     .into("papers")
     .returning("id");

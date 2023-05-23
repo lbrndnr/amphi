@@ -41,9 +41,9 @@ async function processURL(url) {
       meta.url = url;
       meta.pdfURL = pdfURL;
   
-      const authorIDs = await Promise.all(meta.authors.map(db.getOrInsertAuthor));
+      // const authorIDs = await Promise.all(meta.authors.map(db.getOrInsertAuthor));
       const paperID = await db.insertPaper(meta);
-      authorIDs.forEach(aID => db.insertPaperAuthor(paperID, aID));
+      // await Promise.all(authorIDs.map(aID => db.insertPaperAuthor(paperID, aID)));
     
       console.log(`Successfully inserted ${meta.title}.`);
     }
