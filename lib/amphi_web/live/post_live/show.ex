@@ -12,7 +12,7 @@ defmodule AmphiWeb.PostLive.Show do
     |> to_form()
 
     post = Posts.get_post!(id, [:paper])
-    comments = Comments.list_comments(post, [:user])
+    comments = Comments.list_comments_of_post(post, [:user])
 
     {:noreply, socket
     |> assign(:page_title, post.paper.title)
