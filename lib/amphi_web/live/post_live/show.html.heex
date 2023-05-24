@@ -14,11 +14,6 @@
 
 <.list>
   <:item title="Likes"><%= @post.likes %></:item>
-  <:item title="User">
-    <.link href={~p"/users/#{@post.user}"}>
-      <%= @post.user.name %>
-    </.link>
-  </:item>
 </.list>
 
 <%= if @post.paper.pdf_url do %>

@@ -11,7 +11,7 @@ defmodule AmphiWeb.PostLive.Show do
     form = Comments.change_comment(%Comment{})
     |> to_form()
 
-    post = Posts.get_post!(id, [:paper, :user])
+    post = Posts.get_post!(id, [:paper])
     comments = Comments.list_comments(post, [:user])
 
     {:noreply, socket

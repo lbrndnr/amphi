@@ -12,7 +12,7 @@ defmodule Amphi.Models.Paper do
         many_to_many :authors, Amphi.Models.Author, join_through: "paper_authors"
         many_to_many :references, Amphi.Models.Paper, join_through: "paper_references"
         many_to_many :citations, Amphi.Models.Paper, join_through: "paper_references"
-        belongs_to :post, Amphi.Models.Post
+        has_one :post, Amphi.Models.Post
 
         timestamps()
     end

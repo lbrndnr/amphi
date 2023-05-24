@@ -47,7 +47,7 @@ defmodule AmphiWeb.PostLive.FormComponent do
     end
 
     with {:ok, paper} <- paper,
-          post_params = %{"paper" => paper, "user_id" => socket.assigns.current_user.id},
+          post_params = %{"paper" => paper},
           {:ok, post} <- Posts.create_post(post_params) do
 
         notify_parent({:saved, post})

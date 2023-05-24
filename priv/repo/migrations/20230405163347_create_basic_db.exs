@@ -19,17 +19,6 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       timestamps(default: fragment("NOW()"))
     end
 
-    create table(:posts) do
-      add :user_id, references(:users, on_delete: :nothing), null: false
-
-      timestamps(default: fragment("NOW()"))
-    end
-
-    create table(:post_likes, primary_key: false) do
-      add :user_id, references(:users, on_delete: :delete_all), primary_key: true
-      add :post_id, references(:posts, on_delete: :delete_all), primary_key: true
-    end
-
     create table(:papers) do
       add :title, :string, null: false
       add :abstract, :text
@@ -37,9 +26,19 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
       add :url, :string
       add :pdf_url, :string
       add :keywords, {:array, :string}
-      add :post_id, references(:posts)
 
       timestamps(default: fragment("NOW()"))
+    end
+
+    create table(:posts) do
+      add :paper_id, references(:papers, on_delete: :nothing), null: false
+
+      timestamps(default: fragment("NOW()"))
+    end
+
+    create table(:post_likes, primary_key: false) do
+      add :user_id, references(:users, on_delete: :delete_all), primary_key: true
+      add :post_id, references(:posts, on_delete: :delete_all), primary_key: true
     end
 
     create table(:paper_references, primary_key: false) do
@@ -80,10 +79,9 @@ defmodule Amphi.Repo.Migrations.CreateBasicDb do
     create index(:comments, [:post_id])
     create index(:comments, [:response_id])
     create index(:comments, [:user_id])
-    create index(:posts, [:user_id])
+    create unique_index(:posts, [:paper_id])
     create unique_index(:papers, [:url])
     create unique_index(:papers, [:pdf_url])
-    create unique_index(:papers, [:post_id])
     create unique_index(:users, [:username])
     create unique_index(:users, [:email])
     create unique_index(:authors, [:email])

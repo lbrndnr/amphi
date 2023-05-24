@@ -9,7 +9,6 @@ defmodule Amphi.Models.User do
         field :password, :string, virtual: true
         field :password_hash, :string
         has_many :authors, Amphi.Models.Author
-        has_many :posts, Amphi.Models.Post
         has_many :comments, Amphi.Models.Comment
         many_to_many :liked_posts, Amphi.Models.Post, join_through: "post_likes"
         many_to_many :liked_comments, Amphi.Models.Comment, join_through: "comment_likes"
