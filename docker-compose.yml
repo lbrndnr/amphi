@@ -6,18 +6,19 @@ services:
         container_name: amphi_postgres
         restart: always
         environment:
+            POSTGRES_USER: postgres
             POSTGRES_PASSWORD: docker
         ports:
             - 5432:5432
         volumes:
             - $HOME/Documents/Docker/postgres:/var/lib/postgresql/data
 
-    splash:
-        image: scrapinghub/splash
-        container_name: amphi_splash
-        restart: always
-        ports:
-            - 8050:8050
+    # splash:
+    #     image: scrapinghub/splash
+    #     container_name: amphi_splash
+    #     restart: always
+    #     ports:
+    #         - 8050:8050
 
 
     
