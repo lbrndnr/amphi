@@ -61,7 +61,7 @@ def process_arxiv_search_result(res):
 
         author_names = [a.name for a in res.authors]
         author_emails = extract_emails(author_names, page_text(0))
-        authors = [{"name": n, "email": e} for (n, e) in zip(author_names, author_emails)]
+        authors = [{"name": n, "email": e, "affiliation": None} for (n, e) in zip(author_names, author_emails)]
 
         references = extract_references(text)
 
@@ -87,17 +87,28 @@ def search_arxiv(query):
     fail_cnt = 0
     with tqdm(search.results()) as t:
         for res in t:
-            try:
-                paper = process_arxiv_search_result(res)
-                success = db.insert_paper(paper)
+            # try:
+                payload = process_arxiv_search_result(res)
+                if not payload:
+                    continue
 
-                if not success:
+                pid = db.insert_paper(payload)
+                if not pid:
                     raise RuntimeError("Failed to insert paper")
-            except KeyboardInterrupt:
-                break
-            except:
-                fail_cnt += 1
-                t.set_postfix(fail_count=fail_cnt)
+
+                for a in payload["authors"]:
+                    success = db.insert_author(a)
+                    if not success:
+                        raise RuntimeError("Failed to insert author")
+                    
+                
+                
+            # except KeyboardInterrupt:
+            #     break
+            # except Exception as e:
+            #     print(e)
+            #     fail_cnt += 1
+            #     t.set_postfix(fail_count=fail_cnt)
 
 
 if __name__ == "__main__":
