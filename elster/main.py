@@ -1,45 +1,9 @@
 import db
+import pdf
 import arxiv
-import re
-from pypdf import PdfReader
+from PyPDF2 import PdfReader
 import tempfile
-import jellyfish as jf
-import numpy as np
 from tqdm import tqdm
-
-def extract_emails(author_names, text):
-    # remove any whitespace
-    text = re.sub(r"[\n\r\s]+", "", text)
-
-    # match any emails
-    pattern = re.compile("(([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([-!#-'*+/-9=?A-Z^-~]+(\.[-!#-'*+/-9=?A-Z^-~]+)*|\[[\t -Z^-~]*]))")
-
-    # match is a tuple (whole email address, prefix before @)
-    matches = re.findall(pattern, text)
-
-    ds = np.zeros([len(author_names), len(matches)], np.int32)
-    for i, a in enumerate(author_names):
-        for j, m in enumerate(matches):
-            ds[i, j] = jf.levenshtein_distance(a.lower(), m[1].lower())
-
-    es = [None] * len(author_names)
-    d_max = np.amax(ds)
-    for _ in range(len(es)):
-        i, j = np.unravel_index(np.argmin(ds), ds.shape)
-        es[i] = matches[j][0] 
-        ds[i, :] = d_max
-
-    return es
-
-
-def extract_references(text):
-    # matches a citation
-    pattern = re.compile("\[[0-9]+\](.+?)\. *[0-9]{4}\.(.+?)\.", re.I)
-
-    # match is a tuple (author list, reference title)
-    matches = re.findall(pattern, text)
-    
-    return matches
 
 
 def process_arxiv_search_result(res):
@@ -60,10 +24,10 @@ def process_arxiv_search_result(res):
             pdf_url += ".pdf"
 
         author_names = [a.name for a in res.authors]
-        author_emails = extract_emails(author_names, page_text(0))
+        author_emails = pdf.extract_emails(author_names, page_text(0))
         authors = [{"name": n, "email": e, "affiliation": None} for (n, e) in zip(author_names, author_emails)]
 
-        references = extract_references(text)
+        references = pdf.extract_references(text)
 
         return {
             "url": res.entry_id,
