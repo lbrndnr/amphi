@@ -2,7 +2,6 @@ defmodule Amphi.Comments do
   @moduledoc """
   The Comments context.
   """
-
   import Ecto.Query, warn: false
   alias Amphi.Repo
   alias Ecto.Changeset
@@ -10,9 +9,9 @@ defmodule Amphi.Comments do
 
   alias Amphi.Models.Comment
 
-  def list_comments(post, assocs \\ []) do
+  def list_comments_post(post, assocs \\ []) do
     query = from c in Comment,
-      where: c.post_id == ^post.id,
+      where: c.post_id == ^post.id and is_nil(c.response_id),
       left_join: l in assoc(c, :liked_by_users),
       group_by: c.id,
       select: %{c | likes: count(l)}
@@ -23,7 +22,21 @@ defmodule Amphi.Comments do
     end
 
     Repo.all(query)
+  end
 
+  def list_comments_to_comment(comment, assocs \\ []) do
+    query = from c in Comment,
+      where: c.response_id == ^comment.id,
+      left_join: l in assoc(c, :liked_by_users),
+      group_by: c.id,
+      select: %{c | likes: count(l)}
+
+    query = case assocs do
+      [] -> query
+      assocs -> preload(query, ^assocs)
+    end
+
+    Repo.all(query)
   end
 
   def get_comment!(id, assocs \\ []) do
@@ -54,6 +67,12 @@ defmodule Amphi.Comments do
   end
 
   def delete_comment(%Comment{} = comment) do
+    query = from c in Comment,
+      where: c.response_id == ^comment.id
+    comments = Repo.all(query)
+    Enum.each(comments, fn c ->
+      Repo.delete(c)
+    end)
     Repo.delete(comment)
   end
 

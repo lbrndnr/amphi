@@ -19,3 +19,27 @@
 .btn-blue:hover {
     @apply bg-blue-700;
 }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Two columns with 1:2 ratio */
+    align-items: center;
+}
+
+.left-column {
+    top: 200px; /* Position it at the top of the viewport */
+    bottom: 0; /* Extend it to the bottom of the viewport */
+    width: 1000px; /* Set a fixed width for the left column */
+    padding: 1rem; /* Add padding to separate from the right column */
+    margin-left: -700px;
+}
+
+.right-column {
+    margin-left: 1100px;
+    position: absolute;
+}
+
+#comment-form {
+    visibility: hidden;
+    position: absolute;
+}

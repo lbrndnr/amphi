@@ -1,44 +1,130 @@
 import * as pdfjsLib from 'pdfjs-dist';
 import * as pdfjsViewer from 'pdfjs-dist/web/pdf_viewer';
 
-const PDFViewer = {
-	mounted() {	
-		this.url = this.el.getAttribute("pdf-url");
 
-		pdfjsLib.getDocument(this.url).promise.then((pdf) => {
-			this.pdf = pdf;
+const PDFViewer = {
+	async mounted() {	
+		this.url = this.el.getAttribute("pdf-url");
+		const extractC = this.el.getAttribute("extract-comment");
+		const pdf = await pdfjsLib.getDocument(this.url).promise;
+		this.pdf = pdf;
+		this.handleEvent("get_comment_rects_comment", (data) => {
+			const rects = reshape(data.rects, [data.rects.length/4, 4]);
+			let minX = Number.MAX_SAFE_INTEGER;
+			let minY = Number.MAX_SAFE_INTEGER;
+			let maxX = Number.MIN_SAFE_INTEGER;
+			let maxY = Number.MIN_SAFE_INTEGER;
+			
+			for(rect of rects) {
+				if(rect[0] == 0){
+					continue;
+				}
+				if (rect[0] < minX) {
+				minX = rect[0];
+				}
+				if (rect[3] < minY) {
+				minY = rect[3];
+				}
+				if (rect[2] > maxX) {
+				maxX = rect[2];
+				}
+				if (rect[1] > maxY) {
+				maxY = rect[1];
+				}
+			};
+			this.loadRectHighlight([minX-20, maxY+20, maxX+20, minY-20], data.idx, rects);
+		});
+		this.handleEvent("get_comment_rects", (data) => {
+			for(let i = 0; i < data.idx.length; ++i){
+				rects = reshape(data.rects[i], [data.rects[i].length/4, 4])
+				for(r of rects){
+					this.highlightRect(data.idx[i], r, "rgba(255, 255, 0, 0.5)");
+				}
+			}
+
+		});
+
+		this.handleEvent("loadPDF", (data) => {
+			this.loadPDFSection();
+		});
+
+		this.handleEvent("loadImage", (data) => {
+			this.loadImageSection();
+		});
+
+		if(extractC){
+			this.loadImageSection();
+		}else {
+			this.loadPDFSection();
+			const input = document.querySelector("#comment-input");
+			const button = document.querySelector("#comment-button");
+			if (input && button) {
+				this.commentInput = input;
+				button.addEventListener("click", this.submitComment.bind(this));	
+			}
+	
+			this.el.addEventListener('keydown', function(event) {
+				if (event.key === "c" && event.metaKey) {
+					this.rects = this.highlightCurrentSelection.bind(this)();
+				
+					// Create a mousemove event listener
+					const handleMouseMove = (e) => {
+						this.mouseY = e.clientY + window.scrollY;
+						
+						const commentForm = document.querySelector('#comment-form');
+						commentForm.style.visibility = 'visible';
+						commentForm.style.top = this.mouseY - 100 + 'px';
+	
+						// Remove the mousemove listener once the form is displayed
+						document.removeEventListener('mousemove', handleMouseMove);
+					};
+				
+					// Add the mousemove event listener to the document
+					document.addEventListener('mousemove', handleMouseMove);
+				}
+			}.bind(this));
+		}
+	},
+
+	loadImageSection(){
+		const loadPDF = async () => {
+			this.viewers = Array(this.pdf.numPages);
+			this.pushEvent("get_comment_rects_comment", {comment_id: parseInt(this.el.getAttribute("comment-id"))});
+		};
+		loadPDF();
+	},
+
+	loadPDFSection(){
+		const loadPDF = async () => {
 			this.viewers = Array(this.pdf.numPages);
 			this.initContainers();
 			for (let i = 0; i < Math.min(this.pdf.numPages, 3); i++) {
 				this.loadPage(i);
 			}
-		});
-
-		const input = this.el.querySelector("#comment-input");
-		const button = this.el.querySelector("#comment-button");
-		if (input && button) {
-			this.commentInput = input;
-			button.addEventListener("click", this.submitComment.bind(this));	
+			this.pushEvent("get_comment_rects");
 		}
+						
+		loadPDF();
+
 	},
-	highlightCurrentSelection() {
+	highlightCurrentSelection(event) {
 		const selectionRects = window.getSelection().getRangeAt(0).getClientRects();
 		if (selectionRects.length == 0) { return }
 
-		const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		// const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+		const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
 		const y = selectionRects[0].top + scrollTop;
 		var idx = null;
 		for (let i = 0; i < this.pdf.numPages; i++) {
 			const r = this.containers[i].getBoundingClientRect();
 			r.y += scrollTop;
-			if (r.x < selectionRects[0].left && selectionRects[0].left < (r.x + r.width) && r.y < y && y < (r.y + r.height)) {
+			if (r.y < y && y < (r.y + r.height)) {
 				idx = i;
 				break;
 			}
 		}
 
 		if (idx == null) { return }
-		
 		const viewport = this.viewers[idx].viewport;
 		const pageRect = this.viewers[idx].canvas.getClientRects()[0];
 
@@ -50,8 +136,11 @@ const PDFViewer = {
 		}
 
 		for (const r of pdfRects) {
-			this.highlightRect(idx, r, "rgba(1, 0.2, 0.4, 0.3)");
+			this.highlightRect(idx, r, "rgba(255, 255, 0, 0.5)");
 		}
+
+		this.rects = pdfRects;
+		this.page_idx = idx;
 
 		return pdfRects;
 	},
@@ -90,8 +179,48 @@ const PDFViewer = {
 			mainContainer.appendChild(elem);
 
 			this.containers[i] = elem;
-		}		
+		}				
 	},
+	async loadRectHighlight(rect, page_idx, highlightRects) {
+		// Get first page of PDF document
+		const page = await this.pdf.getPage(page_idx+1);
+		const viewport = page.getViewport({scale: window.devicePixelRatio});
+
+		// Convert highlightRect to viewport coordinates
+		const highlightViewportRect = viewport.convertToViewportRectangle(rect);
+
+		// Create canvas to render highlighted region of PDF page
+		const highlightCanvas = document.createElement('canvas');
+		highlightCanvas.width = highlightViewportRect[2] - highlightViewportRect[0];
+		highlightCanvas.height = highlightViewportRect[3] - highlightViewportRect[1];
+		const highlightContext = highlightCanvas.getContext('2d');
+		highlightContext.globalAlpha = 0.5;
+		highlightContext.fillStyle = 'yellow';
+		for(rect of highlightRects){
+			if(rect[0] == 0) {
+				continue;
+			}
+			const r = viewport.convertToViewportRectangle(rect);
+			highlightContext.fillRect(r[0]-highlightViewportRect[0], r[1]-highlightViewportRect[1], r[2]-r[0], r[3]-r[1]);
+		}
+		
+		// Render PDF page to canvas
+		const renderContext = {
+			canvasContext: highlightContext,
+			viewport: viewport,
+			transform: [1, 0, 0, 1, -highlightViewportRect[0], -highlightViewportRect[1]],
+			intent: 'print',
+		};
+		await page.render(renderContext).promise;
+
+		// // Render extracted rectangle to canvas
+		const dataUrl = highlightCanvas.toDataURL();
+
+		// Display the extracted rectangle in an image element
+		const img = document.getElementById('image');
+		img.src = dataUrl;
+		img.style.display = 'inline-block';
+	}, 
 	loadPage(idx) {
 		this.pdf.getPage(idx+1).then((page) => {
 			const eventBus = new pdfjsViewer.EventBus();
@@ -107,7 +236,8 @@ const PDFViewer = {
 				eventBus,
 				linkService,
 				l10n: pdfjsViewer.NullL10n,
-				defaultViewport: viewport
+				defaultViewport: viewport,
+				scale: 2.,
 			});
 			viewer.setPdfPage(page);
 			viewer.draw();
@@ -117,15 +247,43 @@ const PDFViewer = {
 		});
 	},
 	submitComment(event) {
-		const rects = this.highlightCurrentSelection();
 		window.getSelection().removeAllRanges();
-
-		const payload = {
-			"text": this.commentInput.value,
-			"rects": rects.flat()
-		};
-		this.pushEvent("comment", {"comment": payload});
+		const commentHeight = this.mouseY - 250;
+		if(this.rects){
+			const payload = {
+				"text": this.commentInput.value,
+				"rects": this.rects.flat().map((num) => Math.round(num)),
+				"comment_height": commentHeight,
+				"page_idx": this.page_idx
+			};
+			this.pushEvent("comment", {"comment": payload});
+	
+			const table = document.querySelector('#comment-stream');
+			const rows = table.querySelectorAll('tr');
+			const lastRow = rows[rows.length - 1];
+			lastRow.style.top =  commentHeight + 'px';
+			lastRow.style.position =  'absolute';
+		}
 	}
+}
+
+
+function reshape(list, shape) {
+	// Check if the product of the new shape is equal to the length of the original list
+	if (list.length !== shape.reduce((acc, val) => acc * val)) {
+		throw new Error('Invalid shape');
+	}
+
+	const result = [];
+	let index = 0;
+
+	// Iterate through the new shape and slice the original list accordingly
+	for (let i = 0; i < shape[0]; i++) {
+		result.push(list.slice(index, index + shape[1]));
+		index += shape[1];
+	}
+
+	return result;
 }
 
 export default PDFViewer;

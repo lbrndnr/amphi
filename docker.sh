@@ -1,0 +1,2 @@
+docker run --rm --name amphi-pg -e POSTGRES_PASSWORD=docker -d -p 5432:5432 -v $HOME/Documents/Docker/postgres:/var/lib/postgresql/data postgres
+docker run -d --rm --name amphi-splash -p 8050:8050 scrapinghub/splash --max-timeout 300

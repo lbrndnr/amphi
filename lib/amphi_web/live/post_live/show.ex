@@ -11,8 +11,8 @@ defmodule AmphiWeb.PostLive.Show do
     form = Comments.change_comment(%Comment{})
     |> to_form()
 
-    post = Posts.get_post!(id, [:paper])
-    comments = Comments.list_comments(post, [:user])
+    post = Posts.get_post!(id, [:paper, :user])
+    comments = Comments.list_comments_post(post, [:user])
 
     {:noreply, socket
     |> assign(:page_title, post.paper.title)
@@ -22,15 +22,26 @@ defmodule AmphiWeb.PostLive.Show do
   end
 
   @impl true
+  @spec handle_event(<<_::48, _::_*8>>, any, map) :: {:noreply, map}
+  def handle_event("get_comment_rects", _, socket) do
+    post = socket.assigns.post
+    comments = Comments.list_comments_post(post)
+    rects = Enum.map(comments, &(&1.rects))
+    idx = Enum.map(comments, &(&1.page_idx))
+    {:noreply, push_event(socket, "get_comment_rects", %{rects: rects, idx: idx})}
+  end
+
+  @impl true
   def handle_event("like_post", _, socket) do
     user = socket.assigns.current_user
     post = socket.assigns.post
     case Users.like_post(user, post) do
       {:ok, _user} ->
         post = Posts.get_post!(post.id, [:paper, :user])
-        {:noreply, socket
-        |> put_flash(:info, "Liked.")
-        |> assign(:post, post)}
+        {:noreply,
+          push_event(socket, "loadPDF", %{})
+          |> put_flash(:info, "Liked.")
+          |> assign(:post, post)}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
@@ -43,9 +54,10 @@ defmodule AmphiWeb.PostLive.Show do
       {:ok, _user} ->
         # New comment with updated likes count
         comment = Comments.get_comment!(comment_id)
-        {:noreply, socket
-        |> put_flash(:info, "Liked comment.")
-        |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
+        {:noreply,
+          push_event(socket, "loadPDF", %{})
+          |> put_flash(:info, "Liked comment.")
+          |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
@@ -54,9 +66,10 @@ defmodule AmphiWeb.PostLive.Show do
   def handle_event("delete", %{"id" => comment_id}, socket) do
     comment = Comments.get_comment!(comment_id)
     case Comments.delete_comment(comment) do
-      {:ok, _} -> {:noreply, socket
-      |> stream_delete(:comments, comment)
-      |> put_flash(:info, "Comment deleted.")}
+      {:ok, _} -> {:noreply,
+        push_event(socket, "loadPDF", %{})
+        |> stream_delete(:comments, comment)
+        |> put_flash(:info, "Comment deleted.")}
       {:error, %Ecto.Changeset{} = changeset} -> {:noreply, socket |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
   end
@@ -70,13 +83,19 @@ defmodule AmphiWeb.PostLive.Show do
 
     case Comments.create_comment(params) do
       {:ok, comment} ->
-        {:noreply, socket
-        |> put_flash(:info, "Comment created successfully")
-        |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
+        {:noreply,
+          push_event(socket, "loadPDF", %{})
+          |> put_flash(:info, "Comment created successfully")
+          |> stream_insert(:comments, comment |> Amphi.Repo.preload([:user]))}
       {:error, %Ecto.Changeset{} = changeset} ->
         {:noreply, socket
         |> put_flash(:error, "An error occurred: #{changeset.errors}")}
     end
+  end
+
+  @impl true
+  def handle_event("comment_thread", %{"id" => comment_id}, socket) do
+    {:noreply, socket |> push_redirect(to: "/comments/#{comment_id}")}
   end
 
 end
