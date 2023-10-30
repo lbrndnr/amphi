@@ -8,7 +8,9 @@
   for={@form}
   id="user-form"
   phx-change="validate"
-  phx-submit="save"
+  phx-submit="save",
+  phx-trigger-action={@trigger_submit},
+  action={~p"/sessions"}
 >
   <.input field={@form[:name]} type="text" label="Name"/>
   <.input field={@form[:username]} type="text" label="Username"/>

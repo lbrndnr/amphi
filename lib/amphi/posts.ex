@@ -34,6 +34,13 @@ defmodule Amphi.Posts do
     Repo.one!(query)
   end
 
+  def get_post_for_paper(id) do
+    query = from p in Post,
+            where: p.paper_id == ^id
+
+    Repo.one(query)
+  end
+
   def create_post(attrs \\ %{}) do
     %Post{}
     |> Post.changeset(attrs)

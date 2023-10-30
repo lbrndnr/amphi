@@ -3,10 +3,9 @@ defmodule Amphi.Models.Post do
   import Ecto.Changeset
 
   schema "posts" do
-    has_one :paper, Amphi.Models.Paper
+    belongs_to :paper, Amphi.Models.Paper
     has_many :comments, Amphi.Models.Comment
-    belongs_to :user, Amphi.Models.User
-    many_to_many :liked_by_users, Amphi.Models.User, join_through: "posts_likes"
+    many_to_many :liked_by_users, Amphi.Models.User, join_through: "post_likes"
     field :likes, :integer, default: 0, virtual: true
 
     timestamps()
@@ -14,6 +13,6 @@ defmodule Amphi.Models.Post do
 
   def changeset(post, attrs) do
     post
-    |> cast(attrs, [:user_id])
+    |> cast(attrs, [:paper_id])
   end
 end

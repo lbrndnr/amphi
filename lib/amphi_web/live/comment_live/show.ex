@@ -9,7 +9,7 @@ defmodule AmphiWeb.CommentLive.Show do
   def handle_params(%{"id" => id}, _, socket) do
 
     comment = Comments.get_comment!(id);
-    post = Posts.get_post!(comment.post_id, [:paper, :user]);
+    post = Posts.get_post!(comment.post_id, [:paper]);
     comments = Comments.list_comments_to_comment(comment, [:user])
 
     {:noreply, socket

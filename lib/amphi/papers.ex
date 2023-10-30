@@ -1,5 +1,6 @@
 defmodule Amphi.Papers do
 
+    import Ecto.Query
     alias Amphi.Repo
     alias Amphi.Models.Paper
     alias Amphi.Models.Author
@@ -16,6 +17,13 @@ defmodule Amphi.Papers do
 
     def get_paper_by(attrs) do
         Repo.get_by(Paper, attrs)
+    end
+
+    def query_paper(query) do
+        from(p in Paper,
+        where: fragment("SIMILARITY(?, ?) > 0",  p.title, ^query),
+        order_by: fragment("LEVENSHTEIN(?, ?)", p.title, ^query))
+        |> Repo.all()
     end
 
     def list_papers do

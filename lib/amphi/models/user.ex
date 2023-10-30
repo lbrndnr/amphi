@@ -9,10 +9,9 @@ defmodule Amphi.Models.User do
         field :password, :string, virtual: true
         field :password_hash, :string
         has_many :authors, Amphi.Models.Author
-        has_many :posts, Amphi.Models.Post
         has_many :comments, Amphi.Models.Comment
-        many_to_many :liked_posts, Amphi.Models.Post, join_through: "posts_likes"
-        many_to_many :liked_comments, Amphi.Models.Comment, join_through: "comments_likes"
+        many_to_many :liked_posts, Amphi.Models.Post, join_through: "post_likes"
+        many_to_many :liked_comments, Amphi.Models.Comment, join_through: "comment_likes"
 
         timestamps()
     end
@@ -30,6 +29,7 @@ defmodule Amphi.Models.User do
         |> cast(attrs, [:password])
         |> validate_format(:email, ~r/@/)
         |> unique_constraint(:email)
+        |> unique_constraint(:username)
         |> validate_required([:password])
         |> validate_length(:password, min: 8, max: 100)
         |> put_pass_hash()

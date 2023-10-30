@@ -3,10 +3,11 @@
 To start the server, run
 
 ```
-mix setup # to install and setup dependencies
-docker run --rm --name amphi-pg -d -p 5432:5432  -e POSTGRES_PASSWORD=docker -v $HOME/Documents/Docker/postgres:/var/lib/postgresql/data postgres # to run postgres docker
-docker run --rm --name amphi-splash -d -p 8050:8050 scrapinghub/splash --max-timeout 300 # to run splash (headless browser)
-mix ecto.migrate # if any outstanding migrations
+docker-compose up -d
+# install and setup dependencies
+mix setup
+# if any outstanding migrations
+mix ecto.migrate 
 mix phx.server
 ```
 
