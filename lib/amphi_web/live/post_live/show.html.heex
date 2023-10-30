@@ -17,11 +17,11 @@
 
     <.list>
       <:item title="Likes"><%= @post.likes %></:item>
-      <:item title="User">
+      <%!-- <:item title="User">
         <.link href={~p"/users/#{@post.user}"}>
           <%= @post.user.name %>
         </.link>
-      </:item>
+      </:item> --%>
     </.list>
 
 
